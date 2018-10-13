@@ -4,6 +4,7 @@ import java.util.*;
 public class UserInterface
 {
     private String menu;
+    private FileIO f;
 
     public UserInterface()
     {
@@ -13,14 +14,18 @@ public class UserInterface
                     "(4)    -Itinerary by Margin\n" +
                     "(0)    -Quit\n" +
                     "Choice:>";
+        this.f =  new FileIO();
     }
   
     //present functions and allows user to use functionality 
     public void run()
     {
         int choose, op;
-        String fileName;
- 
+        String fileName, listFilt;
+        
+        //search and read require files in current directory
+        readFiles();
+         
         do
         {
             //System.out.print(menu);
@@ -32,7 +37,8 @@ public class UserInterface
                     System.out.println("Bye");
                 break;
                 case 1:
-                    //TODO
+                    listFilt = stringInput("list based on State, Party or Division?");
+                    listNominees(listFilt);          
                 break;
                 case 2:
                     //TODO
@@ -76,5 +82,44 @@ public class UserInterface
         return input;
     }
 
+    public void listNominees(String option)
+    {
+        String state, party, div;
 
+        if(option.equals("State"))
+        {
+            state = stringInput("Enter a states' abbreviation or Enter ALL to display all states");
+            f.listByState(state);
+        }
+        else if(option.equals("Party"))
+        {
+            party = stringInput("Enter the abbreviation for the party or Enter ALL to display all parties");
+            f.listByParty(party);
+        }
+        else if(option.equals("Division"))
+        {
+            div = stringInput("Enter a division or Enter ALL to display all divisions");
+            f.listByDiv(div);
+        }
+        else
+        {
+            System.out.println("Invalid choice");
+        }
+    }
+
+    private void readFiles()
+    {
+        boolean hasFiles;
+
+        hasFiles = f.readDirFiles();
+
+        if(hasFiles)
+        {
+            System.out.println("required files found and sucessfully read");
+        }
+        else
+        {
+            System.out.println("required files not found");
+        }
+    }
 }

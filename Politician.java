@@ -15,10 +15,17 @@ public class Politician
 
     public Politician(String sname, String fname, String partyAb, String partyNm)
     {
-        this.surname = sname;
-        this.firstname = fname;
-        this.partyAbrev = partyAb;
-        this.partyNm = partyNm;
+        if(validateString(sname) && validateString(fname))
+        {
+            this.surname = sname;
+            this.firstname = fname;
+            this.partyAbrev = partyAb;
+            this.partyNm = partyNm;
+        }
+        else
+        {
+            throw new IllegalArgumentException("All politician name fields cannot be empty");
+        }
     }
 
     public String getSurname()
@@ -29,6 +36,11 @@ public class Politician
     public String getFirstname()
     {
         return this.firstname;
+    }
+
+    public String getFullName()
+    {
+        return this.surname + " " + this.firstname;
     }
 
     public String getPartyShortName()
@@ -91,7 +103,7 @@ public class Politician
 
     public String toString()
     {
-        return this.firstname + "," + this.surname + "," + this.partyNm + "," + this.partyAbrev;
+        return this.getFullName() + "," + this.partyNm + "," + this.partyAbrev;
     }
 
     private boolean validateString(String inStr)

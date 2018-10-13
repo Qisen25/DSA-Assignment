@@ -205,6 +205,6 @@ public class DSALinkedList<E> implements Iterable
         }
 
         return nodeValue;
-   }
-            
+    }
+
 }

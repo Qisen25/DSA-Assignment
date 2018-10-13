@@ -2,25 +2,30 @@ public class Division
 {
     private int divID;
     private String divNm;
-    private int pollPlaceID;
-    private String pollPlaceNm;
+    private DSALinkedList<PollPlace> pollList;
 
     public Division()
     {
         divID = 0;
         divNm = "unknown";
-        pollPlaceID = 0;
-        pollPlaceNm = "unknown";
+        pollList = new DSALinkedList<PollPlace>();
     }
 
-    public Division(int divID, String divNm, int pPlID, String pPlNm)
+    public Division(int divID, String divNm)
     {
-        this.divID = divID;
-        this.divNm = divNm;
-        this.pollPlaceID = pPlID;
-        this.pollPlaceNm = pPlNm;
+        if(validateString(divNm))
+        {
+            this.divID = divID;
+            this.divNm = divNm;
+            pollList = new DSALinkedList<PollPlace>();
+        }
+        else
+        {
+            throw new IllegalArgumentException("division name cannot be empty");
+        }
     }
 
+//ACCESSORS
     public int getID()
     {
         return this.divID;
@@ -31,19 +36,14 @@ public class Division
         return this.divNm;
     }
 
-    public int getPollPlID()
-    {
-        return this.pollPlaceID;
-    }
-
-    public String getPollPlName()
-    {
-        return this.pollPlaceNm;
-    }
-
+//MUTATORS
     public void setID(int id)
     {
         this.divID = id;
+    }
+    public void addPollPlace(int pollID, String pollPl, int ordVotes, double swing)
+    {
+        this.pollList.insertLast(new PollPlace(pollID, pollPl, ordVotes, swing));
     }
 
     public void setDivName(String name)
@@ -58,29 +58,12 @@ public class Division
         }
     }
 
-    public void setPollPlID(int id)
-    {
-        this.pollPlaceID = id;
-    }
-
-    public void setPollPlName(String name)
-    {
-        if(validateString(name))
-        {
-            this.pollPlaceNm = name;
-        }
-        else
-        {
-            throw new IllegalArgumentException("First name cannot be empty");
-        }
-    }
-
     public String toString()
     {
-        return this.divID + "," + this.divNm + "," + this.pollPlaceID + "," + this.pollPlaceNm;
+        return this.divID + "," + this.divNm;
     }
 
-
+//PRIVATE
     private boolean validateString(String inStr)
     {
         return (!inStr.isEmpty() && inStr != null);
