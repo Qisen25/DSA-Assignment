@@ -86,17 +86,17 @@ public class UserInterface
     {
         String state, party, div;
 
-        if(option.equals("State"))
+        if(option.equalsIgnoreCase("State"))
         {
             state = stringInput("Enter a states' abbreviation or Enter ALL to display all states");
             f.listByState(state);
         }
-        else if(option.equals("Party"))
+        else if(option.equalsIgnoreCase("Party"))
         {
             party = stringInput("Enter the abbreviation for the party or Enter ALL to display all parties");
             f.listByParty(party);
         }
-        else if(option.equals("Division"))
+        else if(option.equalsIgnoreCase("Division"))
         {
             div = stringInput("Enter a division or Enter ALL to display all divisions");
             f.listByDiv(div);

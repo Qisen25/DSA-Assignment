@@ -102,7 +102,6 @@ public class FileIO
             if(files[i].isFile())
             {
                 fileNeed = files[i].getName();
-                System.out.println(fileNeed);
                 if(fileNeed.contains("HouseStateFirstPrefsByPollingPlaceDownload-") &&
                     fileNeed.endsWith(".csv"))
                 {
@@ -171,7 +170,7 @@ public class FileIO
         while(it.hasNext())
         {
             nom = it.next();
-            if(nom.getState().equals(state))
+            if(nom.getState().equalsIgnoreCase(state))
             {
                 System.out.println(nom.toString());
             }
@@ -186,7 +185,7 @@ public class FileIO
         while(it.hasNext())
         {
             nom = it.next();
-            if(nom.getPartyShortName().equals(party))
+            if(nom.getPartyShortName().equalsIgnoreCase(party))
             {
                 System.out.println(nom.toString());
             }
@@ -201,7 +200,7 @@ public class FileIO
         while(it.hasNext())
         {
             nom = it.next();
-            if(nom.getDivName().equals(div))
+            if(nom.getDivName().equalsIgnoreCase(div))
             {
                 System.out.println(nom.toString());
             }
