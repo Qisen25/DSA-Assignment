@@ -245,7 +245,7 @@ public class FileIO
                 if(fileNeed.startsWith("HouseStateFirstPrefsByPollingPlaceDownload-") &&
                     fileNeed.endsWith(".csv"))
                 {
-                    //this.readStateRep(fileNeed);
+                    this.readStateRep(fileNeed);
                     fileFound = true;
                 }
             }
@@ -376,7 +376,7 @@ public class FileIO
         this.outQueue = new DSAQueue<String>();//reset queue for each report that calls this
                                                //prevent other list displays from apppending to queue
 
-        System.out.println("List of nominees filter by state:" + state + "|party:" + party + "|division:" + div);
+        System.out.println("==List of nominees filter by state:" + state + "|party:" + party + "|division:" + div + "==");
 
         while(it.hasNext())
         {
@@ -397,7 +397,15 @@ public class FileIO
                 this.outQueue.enqueue(nom.toString());
                 resultsFound++;
             }
-            //third case user only specifies state
+            // third user specifies state and party
+            else if(nom.getState().equalsIgnoreCase(state) && nom.getPartyShortName().equalsIgnoreCase(party) &&
+                    div.equalsIgnoreCase("ALL"))
+            {
+                System.out.println(nom.toString());
+                this.outQueue.enqueue(nom.toString());
+                resultsFound++;
+            }
+            //fourth case user only specifies state
             else if(nom.getState().equalsIgnoreCase(state) && party.equalsIgnoreCase("ALL") &&
                     div.equalsIgnoreCase("ALL"))
             {
@@ -405,7 +413,7 @@ public class FileIO
                 this.outQueue.enqueue(nom.toString());
                 resultsFound++;
             }
-            //fourth case user specifies division and party
+            //fifth case user specifies division and party
             else if(state.equalsIgnoreCase("ALL") && nom.getPartyShortName().equalsIgnoreCase(party) &&
                     nom.getDivName().equalsIgnoreCase(div))
             {
@@ -413,7 +421,7 @@ public class FileIO
                 this.outQueue.enqueue(nom.toString());
                 resultsFound++;
             }
-            //fifth case user only specifies divison
+            //sixth case user only specifies divison
             else if(state.equalsIgnoreCase("ALL") && party.equalsIgnoreCase("ALL") &&
                     nom.getDivName().equalsIgnoreCase(div))
             {
@@ -421,7 +429,7 @@ public class FileIO
                 this.outQueue.enqueue(nom.toString());
                 resultsFound++;
             }
-            //sixth case user choose all state, parties and division
+            //seventh case user choose all state, parties and division
             else if(state.equalsIgnoreCase("ALL") && party.equalsIgnoreCase("ALL") &&
                     div.equalsIgnoreCase("ALL"))
             {
@@ -434,69 +442,6 @@ public class FileIO
         return (resultsFound == 0);
     }    
 
-    /**
-    public void listByParty(String party)
-    {
-        Nominee nom = null;
-        Iterator<Nominee> it = nomList.iterator();
-        this.outQueue = new DSAQueue<String>();
-        
-        if(party.equalsIgnoreCase("all"))
-        {
-            System.out.println("==List of nominees from " + party + " parties==");
-        }
-        else
-        {
-            System.out.println("==List of nominees from " + party + " party==");
-        }
-
-        while(it.hasNext())
-        {
-            nom = it.next();
-            if(nom.getPartyShortName().equalsIgnoreCase(party))
-            {
-                System.out.println(nom.toString());
-                this.outQueue.enqueue(nom.toString());
-            }
-            else if(party.equalsIgnoreCase("all"))
-            {
-                System.out.println(nom.toString());
-                this.outQueue.enqueue(nom.toString());
-            }
-        }
-    }
-
-    public void listByDiv(String div)
-    {
-        Nominee nom = null;
-        Iterator<Nominee> it = nomList.iterator();
-        this.outQueue = new DSAQueue<String>();
-        
-        if(div.equalsIgnoreCase("all"))
-        {
-            System.out.println("==List of nominees from " + div + " divisions==");
-        }
-        else
-        {
-            System.out.println("==List of nominees from " + div + " division==");
-        }
-
-        while(it.hasNext())
-        {
-            nom = it.next();
-            if(nom.getDivName().equalsIgnoreCase(div))
-            {
-                System.out.println(nom.toString());
-                this.outQueue.enqueue(nom.toString());
-            }
-            else if(div.equalsIgnoreCase("all"))
-            {
-                System.out.println(nom.toString());
-                this.outQueue.enqueue(nom.toString());
-            }
-        }
-    }
-    **/
     public boolean searchNomBySname(String substr, String stateNm, String partyAb)
     {
         int resultsFound = 0;
