@@ -112,8 +112,8 @@ public class Nominee extends Politician
 
     public String toString()
     {
-        return ("ID: " + nomineeId + ", " + super.toString() + ", STATE: " + state + ", DIVISION: " + div.toString() + ", BALLOT POSITION: " + ballotPos +
-                ", ELECTED?: " + elected + ", HISTORICALLY ELECTED?: " + HistoricElected);
+        return ("ID: " + nomineeId + "," + super.toString() + ",STATE: " + state + ",DIVISION: " + div.toString() + ",BALLOT POSITION: " + ballotPos +
+                ",ELECTED: " + elected + ",HISTORIC ELECTED: " + HistoricElected);
     }
 
 //PRIVATE

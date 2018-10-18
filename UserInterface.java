@@ -20,8 +20,8 @@ public class UserInterface
     //present functions and allows user to use functionality 
     public void run()
     {
-        int choose, op, partyOrState;
-        String fileName, listFilt, partyAbrev, sname;
+        int choose, op, partyOrState, listFilt;
+        String fileName, partyAbrev, sname;
         
         //search and read require files in current directory
         readFiles();
@@ -37,14 +37,13 @@ public class UserInterface
                     System.out.println("Bye");
                 break;
                 case 1:
-                    listFilt = stringInput("list based on State, Party or Division?: ");
-                    listNominees(listFilt);          
+                    listFilt = intPut("==list based on==\n(1) -State\n(2) -Party\n(3) -Division\nchoice:>");
+                    listNominees(listFilt);         
                 break;
                 case 2:
                     sname = stringInput("Enter first few letters or complete surname of nominee: ");
                     partyOrState = intPut("=Filter by=\n(1)state\n(2)party\nchoice:>");
                     searchNominees(sname, partyOrState);          
-                    
                 break;
                 case 3:
                     partyAbrev = stringInput("Enter party abbreviation: ");
@@ -98,49 +97,66 @@ public class UserInterface
         return input;
     }
 
-    public void listNominees(String option)
+    public void listNominees(int option)
     {
         String state, party, div, all;
+        boolean readExecuted = false;
 
         all = "ALL";
-        if(option.equalsIgnoreCase("State"))
+        if(option == 1)
         {
             state = stringInput("Enter a states' abbreviation or Enter ALL to display all states: ");
             f.listByState(state);
+            readExecuted = true;
         }
-        else if(option.equalsIgnoreCase("Party"))
+        else if(option == 2)
         {
             party = stringInput("Enter the abbreviation for the party or Enter ALL to display all parties: ");
             f.listByParty(party);
+            readExecuted = true;
         }
-        else if(option.equalsIgnoreCase("Division"))
+        else if(option == 3)
         {
             div = stringInput("Enter name of a division or Enter ALL to display all divisions: ");
             f.listByDiv(div);
+            readExecuted = true;
         }
         else
         {
             System.out.println("Invalid choice");
+        }
+
+        if(readExecuted)
+        {
+            writeFile("listNominees.csv"); 
         }
     }
 
     public void searchNominees(String sname, int option)
     {
         String state, party;
+        boolean readExecuted = false;
 
         if(option == 1)
         {
             state = stringInput("Enter a states' abbreviation or Enter ALL to search all states: ");
             f.searchNomBySname(sname, "state", state);
+            readExecuted = true;
         }
         else if(option == 2)
         {
             party = stringInput("Enter the abbreviation for the party or Enter ALL to search all parties: ");
             f.searchNomBySname(sname, "party", party);
+            readExecuted = true;
         }
         else
         {
             System.out.println("Invalid choice");
+        }
+
+        if(readExecuted)
+        {
+            writeFile("searchNominees.csv");                     
         }
     }
 
@@ -148,7 +164,7 @@ public class UserInterface
     { 
         double threshold, defaultThreshold;
         int custom;
-        boolean noDisplay;
+        boolean noDisplay = true;
         
         custom = intPut("Enter 1 to set custom threshold\nEnter 0 to use default threshold\nchoice:>");
 
@@ -174,6 +190,11 @@ public class UserInterface
         {
             System.out.println("Invalid choice");
         }
+
+        if(!noDisplay)
+        {
+            writeFile("partyMargins.csv");                     
+        }
     }
 
     private void readFiles()
@@ -191,4 +212,22 @@ public class UserInterface
             System.out.println("required files not found");
         }
     }
+
+    private void writeFile(String defaultfile)
+    {
+        String choice, filename;
+
+        choice = stringInput("Save to file? y or n: ");
+        if(choice.equals("y"))
+        {
+            filename = stringInput("Enter file name or hit enter to save to default file(" + defaultfile + ")\nfilename:> " );
+            if(filename.trim().isEmpty() || filename == null)
+            {
+                filename = defaultfile;
+            }
+
+            f.writeToFile(filename);
+        }
+    }
+
 }

@@ -44,7 +44,7 @@ public class Politician
 
     public String getFullName()
     {
-        return this.surname + " " + this.firstname;
+        return this.firstname + " " + this.surname;
     }
 
 //MUTATORS
@@ -84,7 +84,7 @@ public class Politician
 
     public String toString()
     {
-        return "FULLNAME: " + this.getFullName() + ", PARTY: " + this.party.toString();
+        return "FULLNAME: " + this.getFullName() + "," + this.party.toString();
     }
 
 //PRIVATE

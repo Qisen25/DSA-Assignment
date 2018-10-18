@@ -8,12 +8,14 @@ public class FileIO
     private DSALinkedList<Nominee> nomList;// consider changing to array;
     //for insertion sort easier
     private boolean houseConstruct;
+    private DSAQueue<String> outQueue;
 
     public FileIO()
     {
         partyList = new DSALinkedList<Party>();
         divList = new DSALinkedList<Division>();
         nomList = new DSALinkedList<Nominee>();
+        outQueue = new DSAQueue<String>();
         houseConstruct = false;
     }
 
@@ -192,6 +194,31 @@ public class FileIO
         }
     }
 
+    //write to file
+    public void writeToFile(String output)
+    {
+        FileOutputStream fileStrm = null;
+        PrintWriter pw;
+        
+        try
+        {
+            fileStrm = new FileOutputStream(output);
+            pw = new PrintWriter(fileStrm);
+
+            System.out.println("Writing to file......");
+            while(!this.outQueue.isEmpty())
+            {
+                pw.println(this.outQueue.dequeue());
+            }
+            pw.close();
+            fileStrm.close();
+        }
+        catch(IOException e)
+        {
+            System.out.println("Error " + e.getMessage());
+        }
+    }
+
     public boolean getHouseConstructed()
     {
         return this.houseConstruct;
@@ -360,10 +387,12 @@ public class FileIO
             if(nom.getState().equalsIgnoreCase(state))
             {
                 System.out.println(nom.politicianString());
+                this.outQueue.enqueue(nom.politicianString());
             }
             else if(state.equalsIgnoreCase("all"))
             {
                 System.out.println(nom.politicianString());
+                this.outQueue.enqueue(nom.politicianString());
             }
         }
     }    
@@ -388,10 +417,12 @@ public class FileIO
             if(nom.getPartyShortName().equalsIgnoreCase(party))
             {
                 System.out.println(nom.politicianString());
+                this.outQueue.enqueue(nom.politicianString());
             }
             else if(party.equalsIgnoreCase("all"))
             {
                 System.out.println(nom.politicianString());
+                this.outQueue.enqueue(nom.politicianString());
             }
         }
     }
@@ -416,10 +447,12 @@ public class FileIO
             if(nom.getDivName().equalsIgnoreCase(div))
             {
                 System.out.println(nom.politicianString());
+                this.outQueue.enqueue(nom.politicianString());
             }
             else if(div.equalsIgnoreCase("all"))
             {
                 System.out.println(nom.politicianString());
+                this.outQueue.enqueue(nom.politicianString());
             }
         }
     }
@@ -440,6 +473,7 @@ public class FileIO
                     if(nom.getPartyShortName().equalsIgnoreCase(theOptionName))
                     {
                         System.out.println(nom.toString());
+                        this.outQueue.enqueue(nom.toString());
                     }
                 }
                 else if(op.equalsIgnoreCase("state"))
@@ -447,12 +481,14 @@ public class FileIO
                     if(nom.getState().equalsIgnoreCase(theOptionName))
                     {
                         System.out.println(nom.toString());
+                        this.outQueue.enqueue(nom.toString());
                     }
                 }
 
-                if(theOptionName.equalsIgnoreCase("ALL"))//just search whole list
+                if(theOptionName.equalsIgnoreCase("ALL"))//just search whole list if filter by all
                 {
                     System.out.println(nom.toString());
+                    this.outQueue.enqueue(nom.toString());
                 }
             }
         }
@@ -479,8 +515,9 @@ public class FileIO
                     Division div = itd.next();
                     if(div.getMargin(p.getPartyShortName()) > -threshold && div.getMargin(p.getPartyShortName()) < threshold)
                     {
-                        System.out.print("PARTY:" + p.toString() + ",");
-                        System.out.println(div.toString(p.getPartyShortName()));
+                        String out = p.toString() + "," + div.toString(p.getPartyShortName());
+                        System.out.println(out);
+                        this.outQueue.enqueue(out);
                         divMargInRange++;
                     }
                     

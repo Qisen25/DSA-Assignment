@@ -63,7 +63,7 @@ public class Party
 
     public String toString()
     {
-        return this.partyNm + "(" + this.partyAbrev + ")";
+        return "PARTY: " + this.partyNm + "(" + this.partyAbrev + ")";
     }
 
     private boolean validateString(String inStr)
