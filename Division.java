@@ -1,7 +1,9 @@
+import java.util.*;
 public class Division
 {
     private int divID;
     private String divNm;
+    private String state;
     private DSALinkedList<PollPlace> pollList;
 
     public Division()
@@ -11,12 +13,13 @@ public class Division
         pollList = new DSALinkedList<PollPlace>();
     }
 
-    public Division(int divID, String divNm)
+    public Division(int divID, String divNm, String state)
     {
         if(validateString(divNm))
         {
             this.divID = divID;
             this.divNm = divNm;
+            this.state = state;
             pollList = new DSALinkedList<PollPlace>();
         }
         else
@@ -36,14 +39,61 @@ public class Division
         return this.divNm;
     }
 
+    public int getTotalPartyVotes(String partyAb)
+    {
+        int total = 0;
+        PollPlace p = null;
+        Iterator<PollPlace> it = pollList.iterator();
+
+        while(it.hasNext())
+        {
+            p = it.next();
+            if(p.getPartyAb().equals(partyAb))
+            {
+                total += p.getOrderVotes();
+            }
+        }
+        return total;
+    }
+
+    public int getTotalVotes()
+    {
+        int total = 0;
+        PollPlace p = null;
+        Iterator<PollPlace> it = pollList.iterator();
+
+        while(it.hasNext())
+        {
+            p = it.next();
+            total += p.getOrderVotes();
+            //total += 1;
+        }
+        return total;
+    }
+
+    public double getMargin(String partyAb)
+    {
+        double margin;
+
+        margin = (((double)this.getTotalPartyVotes(partyAb) / (double)this.getTotalVotes())*100) - 50;
+
+        return margin;
+    }
+
 //MUTATORS
     public void setID(int id)
     {
         this.divID = id;
     }
-    public void addPollPlace(int pollID, String pollPl, int ordVotes, double swing)
+
+    public void setState(String inState)
     {
-        this.pollList.insertLast(new PollPlace(pollID, pollPl, ordVotes, swing));
+        this.state = inState;
+    }
+
+    public void addPollPlace(int candID, String party, int pollID, String pollPl, int ordVotes, double swing)
+    {
+        this.pollList.insertLast(new PollPlace(candID, party, pollID, pollPl, ordVotes, swing));
     }
 
     public void setDivName(String name)
@@ -60,7 +110,12 @@ public class Division
 
     public String toString()
     {
-        return this.divID + "," + this.divNm;
+        return "(ID)" + this.divID + ", " + this.divNm + "(" + state + ")";
+    }
+
+    public String toString(String partyAb)
+    {
+        return this.state + "," + this.divID + "," + this.divNm + "," + this.getMargin(partyAb);
     }
 
 //PRIVATE

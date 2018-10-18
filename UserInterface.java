@@ -21,7 +21,7 @@ public class UserInterface
     public void run()
     {
         int choose, op;
-        String fileName, listFilt;
+        String fileName, listFilt, partyAbrev, sname, partyOrState;
         
         //search and read require files in current directory
         readFiles();
@@ -41,10 +41,14 @@ public class UserInterface
                     listNominees(listFilt);          
                 break;
                 case 2:
-                    //TODO
+                    sname = stringInput("Enter first few letters or complete surname of nominee");
+                    partyOrState = stringInput("Filter by party or state?");
+                    searchNominees(sname, partyOrState);          
+                    
                 break;
                 case 3:
-                    //TODO
+                    partyAbrev = stringInput("Enter party abbreviation");
+                    listMarginByParty(partyAbrev);
                 break;
                 case 4:
                     //TODO
@@ -70,6 +74,18 @@ public class UserInterface
         return input;
     }
 
+    //double input
+    private double realInput(String prompt)
+    {
+        double input;
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print(prompt);
+        input = sc.nextDouble();
+
+        return input;
+    }
+
     //string input
     private String stringInput(String prompt)
     {
@@ -84,8 +100,9 @@ public class UserInterface
 
     public void listNominees(String option)
     {
-        String state, party, div;
+        String state, party, div, all;
 
+        all = "ALL";
         if(option.equalsIgnoreCase("State"))
         {
             state = stringInput("Enter a states' abbreviation or Enter ALL to display all states");
@@ -98,8 +115,51 @@ public class UserInterface
         }
         else if(option.equalsIgnoreCase("Division"))
         {
-            div = stringInput("Enter a division or Enter ALL to display all divisions");
+            div = stringInput("Enter name of a division or Enter ALL to display all divisions");
             f.listByDiv(div);
+        }
+        else
+        {
+            System.out.println("Invalid choice");
+        }
+    }
+
+    public void searchNominees(String sname, String option)
+    {
+        String state, party;
+
+        if(option.equalsIgnoreCase("State"))
+        {
+            state = stringInput("Enter a states' abbreviation or Enter ALL to display all states");
+            f.searchNomBySname(sname, option, state);
+        }
+        else if(option.equalsIgnoreCase("Party"))
+        {
+            party = stringInput("Enter the abbreviation for the party or Enter ALL to display all parties");
+            f.searchNomBySname(sname, option, party);
+        }
+        else
+        {
+            System.out.println("Invalid choice");
+        }
+    }
+
+    public void listMarginByParty(String party)
+    { 
+        double threshold, defaultThreshold;
+        int custom;
+        
+        custom = intPut("Enter 1 to set custom threshold or 0 to use default threshold:");
+
+        defaultThreshold = 6;
+        if(custom == 1)
+        {
+            threshold = realInput("Enter threshold:");
+            f.listMargin(party, threshold);
+        }
+        else if(custom == 0)
+        {
+            f.listMargin(party, defaultThreshold);
         }
         else
         {

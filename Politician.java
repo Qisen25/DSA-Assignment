@@ -1,26 +1,29 @@
+/*
+ *Author: Kei Wang - 19126089
+ *Politician class
+ */
 public class Politician
 {
     private String surname;
     private String firstname;
-    private String partyAbrev;
-    private String partyNm;
+    private Party party;
 
+//DEFAULT CONSTRUCTOR
     public Politician()
     {
         surname = "unknown";
         firstname = "unknown";
-        partyAbrev = "unknown";
-        partyNm = "unknown";
+        party = new Party();
     }
 
-    public Politician(String sname, String fname, String partyAb, String partyNm)
+//ALTERNATE CONSTRUCTOR
+    public Politician(String sname, String fname, Party party)
     {
         if(validateString(sname) && validateString(fname))
         {
             this.surname = sname;
             this.firstname = fname;
-            this.partyAbrev = partyAb;
-            this.partyNm = partyNm;
+            this.party = party;
         }
         else
         {
@@ -28,6 +31,7 @@ public class Politician
         }
     }
 
+//ACCESSORS
     public String getSurname()
     {
         return this.surname;
@@ -43,16 +47,7 @@ public class Politician
         return this.surname + " " + this.firstname;
     }
 
-    public String getPartyShortName()
-    {
-        return this.partyAbrev;
-    }
-
-    public String getPartyName()
-    {
-        return this.partyNm;
-    }
-
+//MUTATORS
     public void setSurname(String sname)
     {
         if(validateString(sname))
@@ -77,35 +72,22 @@ public class Politician
         }
     }
 
-    public void setPartyShortName(String sname)
+    public String getPartyShortName()
     {
-        if(validateString(sname))
-        {
-            this.partyAbrev = sname;
-        }
-        else
-        {
-            throw new IllegalArgumentException("party abbreviation cannot be empty");
-        }
+        return this.party.getPartyShortName();
     }
 
-    public void setPartyName(String fname)
+    public String getPartyName()
     {
-        if(validateString(fname))
-        {
-            this.partyNm = fname;
-        }
-        else
-        {
-            throw new IllegalArgumentException("party name cannot be empty");
-        }
+        return this.party.getPartyName();
     }
 
     public String toString()
     {
-        return this.getFullName() + "," + this.partyNm + "," + this.partyAbrev;
+        return "FULLNAME: " + this.getFullName() + ", PARTY: " + this.party.toString();
     }
 
+//PRIVATE
     private boolean validateString(String inStr)
     {
         return (!inStr.isEmpty() && inStr != null);

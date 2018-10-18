@@ -20,10 +20,9 @@ public class Nominee extends Politician
     }
 
     public Nominee(String state, Division div, int candId, String sname, String fname, 
-                   int balPos, char elec, char histElec, String partyAb, 
-                   String partyNm)
+                   int balPos, char elec, char histElec, Party party)
     {
-        super(sname, fname, partyAb, partyNm);
+        super(sname, fname, party);
         if(validateString(state))
         {
             this.nomineeId = candId;
@@ -43,6 +42,11 @@ public class Nominee extends Politician
     public int getNomineeID()
     {
         return this.nomineeId;
+    }
+
+    public String getSurname()
+    {
+        return super.getSurname();
     }
 
     public String getFullName()
@@ -93,13 +97,23 @@ public class Nominee extends Politician
 //MUTATOR    
     public void addPollPlace(int pollID, String pollPl, int ordVotes, double swing)
     {
-        this.div.addPollPlace(pollID, pollPl, ordVotes, swing);
+        this.div.addPollPlace(this.nomineeId, this.getPartyShortName(), pollID, pollPl, ordVotes, swing);
+    }
+
+    public void setBalPos(int pos)
+    {
+        this.ballotPos = pos;
+    }
+
+    public String politicianString()
+    {
+        return super.toString();
     }
 
     public String toString()
     {
-        return (state + "," + this.getDivName() + "," + nomineeId + "," + super.toString() + "," + ballotPos +
-                "," + elected + "," + HistoricElected + "," );
+        return ("ID: " + nomineeId + ", " + super.toString() + ", STATE: " + state + ", DIVISION: " + div.toString() + ", BALLOT POSITION: " + ballotPos +
+                ", ELECTED?: " + elected + ", HISTORICALLY ELECTED?: " + HistoricElected);
     }
 
 //PRIVATE

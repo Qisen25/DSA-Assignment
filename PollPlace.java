@@ -1,5 +1,7 @@
 public class PollPlace
 {
+    private int candID;
+    private String partyAb;
     private int pollPlaceID;
     private String pollPlaceNm;
     private int ordVotes;
@@ -7,20 +9,24 @@ public class PollPlace
 
     public PollPlace()
     {
+        candID = 0;
+        partyAb = "unknown";
         pollPlaceID = 0;
         pollPlaceNm = "unknown";
         ordVotes = 0;
         swing = 0.0;
     }
 
-    public PollPlace(int pPlID, String pPlNm, int ordVotes, double swing)
+    public PollPlace(int cand, String party, int pPlID, String pPlNm, int ord, double sw)
     {
         if(validateString(pPlNm))
         {
+            this.candID = cand;
+            this.partyAb = party;
             this.pollPlaceID = pPlID;
             this.pollPlaceNm = pPlNm;
-            this.ordVotes = ordVotes;
-            this.swing = swing;
+            this.ordVotes = ord;
+            this.swing = sw;
         }
         else
         {
@@ -29,6 +35,16 @@ public class PollPlace
     }
 
 //ACCESSORS
+    public int getCandID()
+    {
+        return this.pollPlaceID;
+    }
+
+    public String getPartyAb()
+    {
+        return this.partyAb;
+    }
+
     public int getPollPlID()
     {
         return this.pollPlaceID;
