@@ -94,6 +94,34 @@ public class Nominee extends Politician
         return this.HistoricElected;
     }
 
+    public String getField(String type)
+    {
+        String str = "";
+
+        if(type.equals("sname"))
+        {
+            str = this.getSurname();
+        }
+        else if(type.equals("statename"))
+        {
+            str = this.state;
+        }
+        else if(type.equals("partysname"))
+        {
+            str = this.getPartyShortName();
+        }
+        else if(type.equals("divname"))
+        {
+            str = this.getDivName();
+        }
+        else if(type.equals("ALL"))
+        {
+            str = this.getSurname() + "," + this.state + "," +
+                  this.getPartyShortName() + "," + this.getDivName();
+        }
+        return str;
+    }
+
 //MUTATOR    
     public void addPollPlace(int pollID, String pollPl, int ordVotes, double swing)
     {
@@ -112,8 +140,13 @@ public class Nominee extends Politician
 
     public String toString()
     {
-        return ("ID: " + nomineeId + "," + super.toString() + ",STATE: " + state + ",DIVISION: " + div.toString() + ",BALLOT POSITION: " + ballotPos +
-                ",ELECTED: " + elected + ",HISTORIC ELECTED: " + HistoricElected);
+        return (super.toString() + ", STATE:" + state + ", DIVISION:" + div.getDivName());
+    }
+
+    public String fullDetails()
+    {
+        return ("ID:" + nomineeId + "," + super.toString() + ",STATE:" + state + ",DIVISION:" + div.toString() + ",BALLOT POSITION:" + ballotPos +
+                ",ELECTED:" + elected + ",HISTORIC ELECTED:" + HistoricElected);
     }
 
 //PRIVATE

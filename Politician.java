@@ -84,7 +84,7 @@ public class Politician
 
     public String toString()
     {
-        return "FULLNAME: " + this.getFullName() + "," + this.party.toString();
+        return "FULLNAME:" + this.getFullName() + ", " + this.party.toString();
     }
 
 //PRIVATE

@@ -37,13 +37,13 @@ public class UserInterface
                     System.out.println("Bye");
                 break;
                 case 1:
-                    listFilt = intPut("==list based on==\n(1) -State\n(2) -Party\n(3) -Division\nchoice:>");
-                    listNominees(listFilt);         
+                    //listFilt = intPut("==list based on==\n(1) -State\n(2) -Party\n(3) -Division\nchoice:>");
+                    listNominees();//listFilt);         
                 break;
                 case 2:
                     sname = stringInput("Enter first few letters or complete surname of nominee: ");
-                    partyOrState = intPut("=Filter by=\n(1)state\n(2)party\nchoice:>");
-                    searchNominees(sname, partyOrState);          
+                    //partyOrState = intPut("=Filter by=\n(1)state\n(2)party\nchoice:>");
+                    searchNominees(sname);//, partyOrState);          
                 break;
                 case 3:
                     partyAbrev = stringInput("Enter party abbreviation: ");
@@ -97,66 +97,66 @@ public class UserInterface
         return input;
     }
 
-    public void listNominees(int option)
+    public void listNominees()//int option)
     {
-        String state, party, div, all;
-        boolean readExecuted = false;
+        String state, party, div;
+        boolean zeroResults;
 
-        all = "ALL";
-        if(option == 1)
-        {
-            state = stringInput("Enter a states' abbreviation or Enter ALL to display all states: ");
-            f.listByState(state);
-            readExecuted = true;
-        }
-        else if(option == 2)
-        {
-            party = stringInput("Enter the abbreviation for the party or Enter ALL to display all parties: ");
-            f.listByParty(party);
-            readExecuted = true;
-        }
-        else if(option == 3)
-        {
-            div = stringInput("Enter name of a division or Enter ALL to display all divisions: ");
-            f.listByDiv(div);
-            readExecuted = true;
-        }
-        else
-        {
-            System.out.println("Invalid choice");
-        }
+        state = stringInput("Enter a states' abbreviation or Enter ALL to filter by all states:> ");
+        party = stringInput("Enter the abbreviation for the party or Enter ALL to filter by all parties:> ");
+        div = stringInput("Enter name of a division or Enter ALL to filter by all divisions:> ");
 
-        if(readExecuted)
+        orderByNomFields();//method that call file to sort nominee list
+
+        zeroResults = f.listByState(state, party, div);
+        /**
+        switch(option)
+        {
+            case 1:
+                state = stringInput("Enter a states' abbreviation or Enter ALL to display all states: ");
+                f.listByState(state);
+                readExecuted = true;
+            break;
+            case 2:
+                party = stringInput("Enter the abbreviation for the party or Enter ALL to display all parties: ");
+                f.listByParty(party);
+                readExecuted = true;
+            break;
+            case 3:
+                div = stringInput("Enter name of a division or Enter ALL to display all divisions: ");
+                f.listByDiv(div);
+                readExecuted = true;
+            break;
+            default:
+                System.out.println("Invalid choice");
+            break;
+        }
+        **/
+        if(!zeroResults)
         {
             writeFile("listNominees.csv"); 
         }
+        else
+        {
+            System.out.println("No results found...");
+        }
     }
 
-    public void searchNominees(String sname, int option)
+    public void searchNominees(String sname)//, int option)
     {
         String state, party;
-        boolean readExecuted = false;
+        boolean zeroResults = true;
 
-        if(option == 1)
+        state = stringInput("Enter a states' abbreviation or Enter 'ALL' to search all states:> ");
+        party = stringInput("Enter the abbreviation for the party or Enter 'ALL' to search all parties:> ");
+        zeroResults = f.searchNomBySname(sname, state, party);
+        if(!zeroResults)
         {
-            state = stringInput("Enter a states' abbreviation or Enter ALL to search all states: ");
-            f.searchNomBySname(sname, "state", state);
-            readExecuted = true;
-        }
-        else if(option == 2)
-        {
-            party = stringInput("Enter the abbreviation for the party or Enter ALL to search all parties: ");
-            f.searchNomBySname(sname, "party", party);
-            readExecuted = true;
+            writeFile("searchNominees.csv");                     
         }
         else
         {
-            System.out.println("Invalid choice");
-        }
-
-        if(readExecuted)
-        {
-            writeFile("searchNominees.csv");                     
+            System.out.println("No results found...");
         }
     }
 
@@ -166,7 +166,7 @@ public class UserInterface
         int custom;
         boolean noDisplay = true;
         
-        custom = intPut("Enter 1 to set custom threshold\nEnter 0 to use default threshold\nchoice:>");
+        custom = intPut("Enter 0 to use default threshold\nEnter 1 to use custom threshold\nchoice:>");
 
         defaultThreshold = 6;
         if(custom == 1)
@@ -175,7 +175,7 @@ public class UserInterface
             noDisplay = f.listMargin(party, threshold);
             if(noDisplay)
             {
-                System.out.println("No margins to display for party: " + party + " with in threshold range..");
+                System.out.println("No margins to display for party: " + party + " with in custom threshold range..");
             }
         }
         else if(custom == 0)
@@ -183,7 +183,7 @@ public class UserInterface
             noDisplay = f.listMargin(party, defaultThreshold);
             if(noDisplay)
             {
-                System.out.println("No margins to display for the " + party + " party with in threshold range...");
+                System.out.println("No margins to display for the " + party + " party with in default threshold range...");
             }
         }
         else
@@ -195,6 +195,41 @@ public class UserInterface
         {
             writeFile("partyMargins.csv");                     
         }
+    }
+
+    private void orderByNomFields()
+    {
+        int op;
+
+        op = intPut("==Order By==\n(1) -Surname" +
+                                "\n(2) -State" +
+                                "\n(3) -Party" +
+                                "\n(4) -Division" +
+                                "\n(5) -All" + 
+                                "\nchoice:> "); 
+
+        switch(op)
+        {
+            case 1:
+                f.sortList("sname");
+            break;
+            case 2:
+                f.sortList("statename");
+            break;
+            case 3:
+                f.sortList("partysname");
+            break;
+            case 4:
+                f.sortList("divname");
+            break;
+            case 5:
+                f.sortList("ALL");
+            break;
+            default:
+                System.out.println("invalid order by");
+            break;
+        }
+
     }
 
     private void readFiles()
