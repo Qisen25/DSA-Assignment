@@ -115,7 +115,7 @@ public class Division
 
     public String toString(String partyAb)
     {
-        return this.state + "," + this.divID + "," + this.divNm + "," + this.getMargin(partyAb);
+        return "DIVISION:" + "(ID)" + this.divID + "," + this.divNm + "(" + state + ")" + ",MARGIN:" + this.getMargin(partyAb);
     }
 
 //PRIVATE

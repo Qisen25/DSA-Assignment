@@ -20,8 +20,8 @@ public class UserInterface
     //present functions and allows user to use functionality 
     public void run()
     {
-        int choose, op;
-        String fileName, listFilt, partyAbrev, sname, partyOrState;
+        int choose, op, partyOrState;
+        String fileName, listFilt, partyAbrev, sname;
         
         //search and read require files in current directory
         readFiles();
@@ -37,17 +37,17 @@ public class UserInterface
                     System.out.println("Bye");
                 break;
                 case 1:
-                    listFilt = stringInput("list based on State, Party or Division?");
+                    listFilt = stringInput("list based on State, Party or Division?: ");
                     listNominees(listFilt);          
                 break;
                 case 2:
-                    sname = stringInput("Enter first few letters or complete surname of nominee");
-                    partyOrState = stringInput("Filter by party or state?");
+                    sname = stringInput("Enter first few letters or complete surname of nominee: ");
+                    partyOrState = intPut("=Filter by=\n(1)state\n(2)party\nchoice:>");
                     searchNominees(sname, partyOrState);          
                     
                 break;
                 case 3:
-                    partyAbrev = stringInput("Enter party abbreviation");
+                    partyAbrev = stringInput("Enter party abbreviation: ");
                     listMarginByParty(partyAbrev);
                 break;
                 case 4:
@@ -92,7 +92,7 @@ public class UserInterface
         String input;
         Scanner sc = new Scanner(System.in);
 
-        System.out.println(prompt);
+        System.out.print(prompt);
         input = sc.nextLine();
 
         return input;
@@ -105,17 +105,17 @@ public class UserInterface
         all = "ALL";
         if(option.equalsIgnoreCase("State"))
         {
-            state = stringInput("Enter a states' abbreviation or Enter ALL to display all states");
+            state = stringInput("Enter a states' abbreviation or Enter ALL to display all states: ");
             f.listByState(state);
         }
         else if(option.equalsIgnoreCase("Party"))
         {
-            party = stringInput("Enter the abbreviation for the party or Enter ALL to display all parties");
+            party = stringInput("Enter the abbreviation for the party or Enter ALL to display all parties: ");
             f.listByParty(party);
         }
         else if(option.equalsIgnoreCase("Division"))
         {
-            div = stringInput("Enter name of a division or Enter ALL to display all divisions");
+            div = stringInput("Enter name of a division or Enter ALL to display all divisions: ");
             f.listByDiv(div);
         }
         else
@@ -124,19 +124,19 @@ public class UserInterface
         }
     }
 
-    public void searchNominees(String sname, String option)
+    public void searchNominees(String sname, int option)
     {
         String state, party;
 
-        if(option.equalsIgnoreCase("State"))
+        if(option == 1)
         {
-            state = stringInput("Enter a states' abbreviation or Enter ALL to display all states");
-            f.searchNomBySname(sname, option, state);
+            state = stringInput("Enter a states' abbreviation or Enter ALL to search all states: ");
+            f.searchNomBySname(sname, "state", state);
         }
-        else if(option.equalsIgnoreCase("Party"))
+        else if(option == 2)
         {
-            party = stringInput("Enter the abbreviation for the party or Enter ALL to display all parties");
-            f.searchNomBySname(sname, option, party);
+            party = stringInput("Enter the abbreviation for the party or Enter ALL to search all parties: ");
+            f.searchNomBySname(sname, "party", party);
         }
         else
         {
@@ -148,18 +148,27 @@ public class UserInterface
     { 
         double threshold, defaultThreshold;
         int custom;
+        boolean noDisplay;
         
-        custom = intPut("Enter 1 to set custom threshold or 0 to use default threshold:");
+        custom = intPut("Enter 1 to set custom threshold\nEnter 0 to use default threshold\nchoice:>");
 
         defaultThreshold = 6;
         if(custom == 1)
         {
             threshold = realInput("Enter threshold:");
-            f.listMargin(party, threshold);
+            noDisplay = f.listMargin(party, threshold);
+            if(noDisplay)
+            {
+                System.out.println("No margins to display for party: " + party + " with in threshold range..");
+            }
         }
         else if(custom == 0)
         {
-            f.listMargin(party, defaultThreshold);
+            noDisplay = f.listMargin(party, defaultThreshold);
+            if(noDisplay)
+            {
+                System.out.println("No margins to display for the " + party + " party with in threshold range...");
+            }
         }
         else
         {

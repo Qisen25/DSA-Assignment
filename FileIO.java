@@ -231,12 +231,10 @@ public class FileIO
     {
         Nominee nom = null;
         Iterator<Nominee> it = nomList.iterator();
-        int i = 0;
         while(it.hasNext())
         {
             nom = it.next();
             System.out.println(nom.getFullName());
-            i++;
         }
     }
 
@@ -440,13 +438,21 @@ public class FileIO
                 if(op.equalsIgnoreCase("party"))
                 {
                     if(nom.getPartyShortName().equalsIgnoreCase(theOptionName))
+                    {
                         System.out.println(nom.toString());
-                            
+                    }
                 }
                 else if(op.equalsIgnoreCase("state"))
                 {
                     if(nom.getState().equalsIgnoreCase(theOptionName))
+                    {
                         System.out.println(nom.toString());
+                    }
+                }
+
+                if(theOptionName.equalsIgnoreCase("ALL"))//just search whole list
+                {
+                    System.out.println(nom.toString());
                 }
             }
         }
@@ -454,8 +460,9 @@ public class FileIO
 
 //TODO revert back and useless implementation for margin soon
 //Convert this back to Nominee objects after testing
-    public void listMargin(String partySname, double threshold)
+    public boolean listMargin(String partySname, double threshold)
     {
+        int divMargInRange = 0;
         boolean found = false;
         Nominee nom = null;
         Iterator<Party> itp = partyList.iterator();
@@ -472,14 +479,18 @@ public class FileIO
                     Division div = itd.next();
                     if(div.getMargin(p.getPartyShortName()) > -threshold && div.getMargin(p.getPartyShortName()) < threshold)
                     {
-                        System.out.print(p.toString() + ",");
+                        System.out.print("PARTY:" + p.toString() + ",");
                         System.out.println(div.toString(p.getPartyShortName()));
+                        divMargInRange++;
                     }
+                    
                 }
 
                 found = true;
             }
         }
+
+        return (divMargInRange == 0);
     }
 
     /**
