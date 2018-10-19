@@ -2,43 +2,111 @@ import java.util.*;
 /*
  * Author Kei Sum Wang - 19126089
  * Graph implementation
+ * Reference: graph is based off DSA prac 6 and lecture note 6
  */
 public class DSAGraph
 {
     //Vertex class -private inner class
     private class DSAVertex
     {
-        private String label;
-        private DSALinkedList<DSAVertex> links;//adj list
-        private boolean visited;
+        private String state;
+        private String division;
+        private double lattitude;
+        private double longitude;
 
-        public DSAVertex(String inLabel)
+        private DSALinkedList<DSAEdge> edges;//edge list
+        private DSALinkedList<DSAVertex> links;//edge list
+        private boolean visited;
+        private int visitDuration;
+
+        public DSAVertex(String inState, String inDiv, double inLat, double inLong)
         {
-            this.label = inLabel;
+            this.state = inState;
+            this.division = inDiv;
+            this.lattitude = inLat;
+            this.longitude = inLong;
+            this.edges = new DSALinkedList<DSAEdge>();
             this.links = new DSALinkedList<DSAVertex>();
             this.visited = false;
+            this.visitDuration = 180;//3 hours(180 minutes) to meet and greet
         }
 
-        public void addEdge(DSAVertex vertex)
+        //maybe remove this
+        public void addEdge(DSAEdge edge)
         {
-            this.links.insertLast(vertex);
+            this.edges.insertLast(edge);
         }
 
-        public String toString()
+        //remove this maybe
+        public void addAdjVertex(DSAVertex v)
+        {
+            this.links.insertLast(v);
+        }
+
+        public String adjacentList()
         {
             String str = "";
             DSAVertex adj = null;
-            Iterator<DSAVertex> it = links.iterator();
+            Iterator<DSAVertex> it = this.links.iterator();
 
             while(it.hasNext())
             {
                 adj = it.next();
-                str += adj.label + " ";
+                str += adj.division + " ";
             }
 
             return str;
         }
+
+        public String edgeListString()
+        {
+            String str = "";
+            DSAEdge edge = null;
+            Iterator<DSAEdge> it = this.edges.iterator();
+
+            while(it.hasNext())
+            {
+                edge = it.next();
+                str += edge.toString() + "\n";
+            }
+
+            return str;
+        }
+
+        public String toString()
+        {
+            return this.state + "," + this.division;
+        }
     }
+
+    private class DSAEdge
+    {
+        private DSAVertex v1;
+        private DSAVertex v2;
+        private double distance;
+        //consider not using private int hours;
+        private int minutes;
+        //consider not using private int seconds;
+        private String transport;
+
+        public DSAEdge(DSAVertex inV1, DSAVertex inV2, double dist, int mins, String trans)
+        {
+            this.v1 = inV1;
+            this.v2 = inV2;
+            this.distance = dist;
+            this.minutes = mins;
+            this.transport = trans;
+        }
+
+        public String toString()
+        {
+            return "From: " + v1.division + "(" + v1.state + ")" + " to: " +
+                    v2.division + "(" + v2.state + ")" + " distance in m: " + distance +
+                    " minutes: " + minutes + " transport: " + transport;
+        }
+
+    }
+
 
     //Graph class fields
     private DSALinkedList<DSAVertex> vertices;
@@ -48,6 +116,7 @@ public class DSAGraph
         this.vertices = new DSALinkedList<DSAVertex>();
     }
 
+    /**
     //ALTERNATE CTOR for reading file
     public DSAGraph(String fileName)
     {
@@ -59,24 +128,26 @@ public class DSAGraph
 
         this.vertices = graph.getVertices();
     }
+    **/
 
     //method add vertex
-    public void addVertex(String label)
+    public void addVertex(String state, String div, double latt, double longit)
     {
-        if(this.getVertex(label) == null)//check if vertex doesn't exist then add it, this is to prevent duplicate nodes
+        if(this.getVertex(div) == null)//check if vertex doesn't exist then add it, this is to prevent duplicate nodes
         {
-            vertices.insertLast(new DSAVertex(label));
+            vertices.insertLast(new DSAVertex(state, div, latt, longit));
         }
     }
 
     /*
      * addEdge
      */
-    public void addEdge(DSAVertex v1, DSAVertex v2)
+    public void addEdge(DSAVertex v1, DSAVertex v2, double dist, int mins, String trans)
     {
         //v1 is start of edge
         //v2 is end of edge
-        v1.links.insertLast(v2);
+        v1.links.insertLast(v2);//add to adjacency list
+        v1.edges.insertLast(new DSAEdge(v1, v2, dist, mins, trans));//create edge, insert
     }
 
     //method to get vertex count
@@ -117,7 +188,7 @@ public class DSAGraph
         while(it.hasNext() && !found)
         {
             v = it.next();
-            if(v.label.equals(inLabel))
+            if(v.division.equals(inLabel))
             {
                 found = true;
             }
@@ -167,7 +238,22 @@ public class DSAGraph
         while(it.hasNext())
         {
             v = it.next();
-            System.out.println(v.label + "=> " + v.toString());
+            System.out.println(v.division + "(" + v.state + ")" + "=> " + v.adjacentList());
+        }
+
+    }
+    
+    public void displayEdges()
+    {
+        DSAVertex v = null;
+        Iterator<DSAVertex> it; 
+        
+        it = vertices.iterator();
+
+        while(it.hasNext())
+        {
+            v = it.next();
+            System.out.print(v.edgeListString());
         }
 
     }
@@ -180,14 +266,14 @@ public class DSAGraph
         it = vertices.iterator();
         while(it.hasNext())
         {
-            System.out.print("  " + it.next().label);
+            System.out.print("  " + it.next().division);
         }
         System.out.println();
 
         it = vertices.iterator();
         for(int ii = 0; ii < matrix.length; ii++)
         {
-            System.out.print(it.next().label + " ");
+            System.out.print(it.next().division + " ");
             for(int jj = 0; jj < matrix[ii].length; jj++)
             {
                 System.out.print(matrix[ii][jj] + "  ");
@@ -221,7 +307,7 @@ public class DSAGraph
                 if(!newVertex.visited)
                 {
                     found = true;//this to stop loop once a new vertex is found
-                    System.out.println(top.label + "=>" + newVertex.label);
+                    System.out.println(top.division + "=>" + newVertex.division);
                     newVertex.visited = true;
                     stack.push(newVertex);
                 }
@@ -264,7 +350,7 @@ public class DSAGraph
                 newVertex = vLinks.next();
                 if(!newVertex.visited)
                 {
-                    System.out.println(front.label + "->" + newVertex.label);
+                    System.out.println(front.division + "->" + newVertex.division);
                     newVertex.visited = true;
                     queue.enqueue(newVertex);
                 }

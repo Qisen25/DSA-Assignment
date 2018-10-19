@@ -108,7 +108,7 @@ public class UserInterface
 
         orderByNomFields();//method that call file to sort nominee list
 
-        zeroResults = f.listByState(state, party, div);
+        zeroResults = f.listNoms(state, party, div);
         /**
         switch(option)
         {

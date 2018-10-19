@@ -9,6 +9,7 @@ public class FileIO
     //for insertion sort easier
     private boolean houseConstruct;
     private DSAQueue<String> outQueue;
+    private DSAQueue<Division> divToVist;
 
     public FileIO()
     {
@@ -16,6 +17,7 @@ public class FileIO
         divList = new DSALinkedList<Division>();
         nomList = new DSALinkedList<Nominee>();
         outQueue = new DSAQueue<String>();
+        divToVist = new DSAQueue<Division>();
         houseConstruct = false;
     }
 
@@ -368,7 +370,7 @@ public class FileIO
         return div;
     }
 
-    public boolean listByState(String state, String party, String div)
+    public boolean listNoms(String state, String party, String div)
     {
         int resultsFound = 0;
         Nominee nom = null;
@@ -485,8 +487,9 @@ public class FileIO
         return (resultsFound == 0);
     }
 
-//TODO revert back and useless implementation for margin soon
-//Convert this back to Nominee objects after testing
+    /*
+     * method to list a party's margins for each division
+     */
     public boolean listMargin(String partySname, double threshold)
     {
         int divMargInRange = 0;
@@ -494,6 +497,7 @@ public class FileIO
         Nominee nom = null;
         Iterator<Party> itp = partyList.iterator();
         this.outQueue = new DSAQueue<String>();
+        this.divToVist = new DSAQueue<Division>();
 
         while(itp.hasNext() && !found)
         {
@@ -510,6 +514,7 @@ public class FileIO
                         String out = p.toString() + "," + div.toString(p.getPartyShortName());
                         System.out.println(out);
                         this.outQueue.enqueue(out);
+                        this.divToVist.enqueue(div);
                         divMargInRange++;
                     }
                     
@@ -519,9 +524,13 @@ public class FileIO
             }
         }
 
-        return (divMargInRange == 0);
+        return (divMargInRange == 0);//purpose of this is to indicate whether any results have been found
     }
 
+    /*
+     * function to sort the nominee list by nominee specified class fields
+     * reference: www.geeksforgeeks.org
+     */
     public void sortList(String field)
     {
         Nominee nom = null;
@@ -531,17 +540,19 @@ public class FileIO
         {
             nom = this.nomList.removeLast();
 
+            //while stack has stuff and the top is temp is less than the temp nom field
+            //put the top back in the list
             while(!stack.isEmpty() && stack.top().getField(field).compareTo(nom.getField(field)) < 0)
             {
                 this.nomList.insertLast(stack.pop());
             }
 
-            stack.push(nom);
+            stack.push(nom);//put list item in stack if while condition not met
         }
 
         while(!stack.isEmpty())
         {
-            this.nomList.insertLast(stack.pop());
+            this.nomList.insertLast(stack.pop());//insert the sorted stack back into list
         }
     }   
 }
