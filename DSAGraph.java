@@ -96,12 +96,10 @@ public class DSAGraph
      */
     private class DSAEdge
     {
-        private DSAVertex v1;
-        private DSAVertex v2;
+        private DSAVertex v1;//from vertex
+        private DSAVertex v2;//to vertex
         private double distance;
-        //consider not using private int hours;
         private int minutes;
-        //consider not using private int seconds;
         private String transport;
         private boolean visited;
 
@@ -394,7 +392,7 @@ public class DSAGraph
 
     /**
      * Breadth-first-search
-     * @return v vertex
+     * @param v vertex
      */
     public void BFS(DSAVertex v)
     {
@@ -404,6 +402,39 @@ public class DSAGraph
 
         this.clearAllVisits();//mark all vertices as new
         queue = new DSAQueue<DSAVertex>();
+        v.visited = true;
+
+        queue.enqueue(v);
+        while(!queue.isEmpty())
+        {
+            front = queue.dequeue();//get front of queue
+            vLinks = front.links.iterator();
+            while(vLinks.hasNext())
+            {
+                newVertex = vLinks.next();
+                if(!newVertex.visited)
+                {
+                    System.out.println(front.division + "->" + newVertex.division);
+                    newVertex.visited = true;
+                    queue.enqueue(newVertex);
+                }
+            }
+        }
+    }
+
+    /**
+     * Shortest path
+     * @param v vertex
+     */
+    public void shortPath(DSAQueue<DSAVertex> vertexQ)
+    {
+        DSAVertex newVertex, front, v;
+        DSAQueue<DSAVertex> queue;
+        Iterator<DSAVertex> vLinks;
+
+        queue = new DSAQueue<DSAVertex>();
+        this.clearAllVisits();//mark all vertices as new
+        v = vertexQ.dequeue();
         v.visited = true;
 
         queue.enqueue(v);

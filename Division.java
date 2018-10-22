@@ -7,11 +7,17 @@ import java.util.*;
  */
 public class Division
 {
+    /**
+     * division class fields
+     */
     private int divID;
     private String divNm;
     private String state;
     private DSALinkedList<PollPlace> pollList;
 
+    /**
+     * DEFAULT constructor for creating Division
+     */
     public Division()
     {
         divID = 0;
@@ -19,6 +25,12 @@ public class Division
         pollList = new DSALinkedList<PollPlace>();
     }
 
+    /**
+     * ALT constructor for creating Division
+     * @param divID(integer)
+     * @param divNm(String)
+     * @param state(String)
+     */
     public Division(int divID, String divNm, String state)
     {
         if(validateString(divNm))
@@ -35,16 +47,28 @@ public class Division
     }
 
 //ACCESSORS
+    /**
+     * method to get division id
+     * @return division id(integer)
+     */
     public int getID()
     {
         return this.divID;
     }
 
+    /**
+     * method to get division name
+     * @return division name(String)
+     */
     public String getDivName()
     {
         return this.divNm;
     }
 
+    /**
+     * method to get total votes for party specified
+     * @return total party votes(integer)
+     */
     public int getTotalPartyVotes(String partyAb)
     {
         int total = 0;
@@ -62,6 +86,10 @@ public class Division
         return total;
     }
 
+    /**
+     * method to get total votes of current division
+     * @return total votes in division(integer)
+     */
     public int getTotalVotes()
     {
         int total = 0;
@@ -77,6 +105,10 @@ public class Division
         return total;
     }
 
+    /**
+     * method to get margins for specified party
+     * @return margin(real)
+     */
     public double getMargin(String partyAb)
     {
         double margin;
@@ -87,21 +119,42 @@ public class Division
     }
 
 //MUTATORS
+    /**
+     * method to set division id
+     * @param id(integer)
+     */
     public void setID(int id)
     {
         this.divID = id;
     }
 
+    /**
+     * method to set state abbreviation
+     * @param inState(String)
+     */
     public void setState(String inState)
     {
         this.state = inState;
     }
 
+    /**
+     * method to add poll place to current division poll place list
+     * @param candID(integer) -nominee id
+     * @param party(String) -party abbreviation
+     * @param pollID(integer) -poll place id
+     * @param pollPl(string) -poll place name
+     * @param ordVotes(integer) -order votes
+     * @param swing(real) -swing
+     */
     public void addPollPlace(int candID, String party, int pollID, String pollPl, int ordVotes, double swing)
     {
         this.pollList.insertLast(new PollPlace(candID, party, pollID, pollPl, ordVotes, swing));
     }
 
+    /**
+     * method to set division name
+     * @param division name(String)
+     */
     public void setDivName(String name)
     {
         if(validateString(name))
@@ -119,6 +172,11 @@ public class Division
         return "(ID)" + this.divID + ", " + this.divNm + "(" + state + ")";
     }
 
+    /**
+     * method gives details of division and margins of specified party
+     * @param party abbreviation(String)
+     * @return division details along with party margin(String)
+     */
     public String toString(String partyAb)
     {
         return "DIVISION:" + "(ID)" + this.divID + "," + this.divNm + "(" + state + ")" + ",MARGIN:" + this.getMargin(partyAb);

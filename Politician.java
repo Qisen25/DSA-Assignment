@@ -6,6 +6,9 @@
  */
 public class Politician
 {
+    /**
+     * politician class fields
+     */
     private String surname;
     private String firstname;
     private Party party;
@@ -23,7 +26,7 @@ public class Politician
 
 //ALTERNATE CONSTRUCTOR
     /**
-     * DEFAULT Constructor for creating politician
+     * ALT Constructor for creating politician
      * @param sname surname(String)
      * @param fname first name(String)
      * @param party (Party)

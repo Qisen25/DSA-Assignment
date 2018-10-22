@@ -8,17 +8,22 @@ import java.io.*;
  */
 public class FileIO
 {
+    /**
+     * File io clas field
+     */
     private String fileName;
     private DSALinkedList<Party> partyList;
     private DSALinkedList<Division> divList;
     private DSALinkedList<Nominee> nomList;// consider changing to array;
-    //for insertion sort easier
     private boolean houseConstruct;
     private DSAQueue<String> outQueue;
     private DSAQueue<String[]> vertexQueue;
     private DSAQueue<Division> divToVist;
     private DSAGraph graph;
 
+    /**
+     * DEFAULT Constructor for file io
+     */
     public FileIO()
     {
         partyList = new DSALinkedList<Party>();
@@ -31,6 +36,10 @@ public class FileIO
         houseConstruct = false;
     }
 
+    /**
+     * method to read in house candidate files
+     * @param file(String) name of file
+     */
     public void readHouseCand(String file)
     {
         int ii = 0;
@@ -114,6 +123,10 @@ public class FileIO
         }
     }
 
+    /**
+     * method to read in house state representative files
+     * @param filename(String)
+     */
     public void readStateRep(String file)
     {
         int ii = 0;
@@ -207,6 +220,10 @@ public class FileIO
         }
     }
 
+    /**
+     * method to read graph from file
+     * @param filename(String)
+     */
     public void graphFromFile(String filename)
     {
         FileInputStream fileStrm = null;
@@ -258,6 +275,9 @@ public class FileIO
         }
     }
 
+    /**
+     * method to connect graph based on the file containing graph read in
+     */
     public void connectGraph()
     {
         String[] array, hrToMin;
@@ -295,6 +315,9 @@ public class FileIO
         }
     }
 
+    /**
+     * method to display graph connections
+     */
     public void displayGraph()
     {
         this.connectGraph();
@@ -305,6 +328,10 @@ public class FileIO
     }
 
     //write to file
+    /**
+     * method to write to file
+     * @param output(String) -name of output file
+     */
     public void writeToFile(String output)
     {
         FileOutputStream fileStrm = null;
@@ -329,11 +356,10 @@ public class FileIO
         }
     }
 
-    public boolean getHouseConstructed()
-    {
-        return this.houseConstruct;
-    }
-
+    /**
+     * method to handle finding required files in current directroy
+     * @return boolean telling whether any required file(s) are found
+     */
     public boolean readDirFiles()
     {
         boolean fileFound = false;
@@ -366,6 +392,9 @@ public class FileIO
     }
 
 
+    /**
+     * method to print all nominees
+     */
     public void printAll()
     {
         Nominee nom = null;
@@ -377,6 +406,11 @@ public class FileIO
         }
     }
 
+    /**
+     * method to check if nominee exists
+     * @param id(integer) - nominee id
+     * @return boolean telling whether nominee exists
+     */
     public boolean nomExist(int id)
     {
         boolean found = false;
@@ -394,6 +428,11 @@ public class FileIO
         return found;
     }
 
+    /**
+     * method to check if party exists based on party abbreviation
+     * @param partyAb(String) - party abbreviation
+     * @return boolean telling whether party exists
+     */
     public boolean partyExist(String partyAb)
     {
         boolean found = false;
@@ -411,6 +450,11 @@ public class FileIO
         return found;
     }
 
+    /**
+     * method to check if division exists
+     * @param id(integer) - division id
+     * @return boolean telling whether division exists
+     */
     public boolean divExist(int id)
     {
         boolean found = false;
@@ -428,6 +472,11 @@ public class FileIO
         return found;
     }
 
+    /**
+     * method to find nominee based on id
+     * @param id(integer) - nominee id
+     * @return nom(Nominee)
+     */
     public Nominee findNom(int id)
     {
         boolean found = false;
@@ -445,6 +494,11 @@ public class FileIO
         return nom;
     }
 
+    /**
+     * method to find party based on party abbreviation
+     * @param partyAb(String) - party abbreviation
+     * @return p(Party)
+     */
     public Party findParty(String partyAb)
     {
         boolean found = false;
@@ -462,6 +516,11 @@ public class FileIO
         return p;
     }
 
+    /**
+     * method to find division based on id
+     * @param id(integer) - division id
+     * @return div(Division)
+     */
     public Division findDiv(int id)
     {
         boolean found = false;
@@ -479,6 +538,13 @@ public class FileIO
         return div;
     }
 
+    /**
+     * method to list nominee based on state, party and division
+     * @param state(String) - abbreviation for state
+     * @param party(String) - abbreviation for party
+     * @param division(String) - division name
+     * @return boolean telling whether if no results are found given the params
+     */
     public boolean listNoms(String state, String party, String div)
     {
         int resultsFound = 0;
@@ -550,9 +616,16 @@ public class FileIO
             }
         }
 
-        return (resultsFound == 0);
+        return (resultsFound == 0);//Purpose is to check whether if no results have been found
     }    
 
+    /**
+     * method to list and search nominee based on surname, state and party
+     * @param subStr(String) - complete or incomplete string for surname
+     * @param stateNm(String) - abbreviation for state
+     * @param partyAb(String) - abbreviation for party
+     * @return boolean telling whether if no results are found given the params
+     */
     public boolean searchNomBySname(String substr, String stateNm, String partyAb)
     {
         int resultsFound = 0;
@@ -593,11 +666,14 @@ public class FileIO
             }
         }
 
-        return (resultsFound == 0);
+        return (resultsFound == 0);//purpose to check if no results are found
     }
 
-    /*
+    /**
      * method to list a party's margins for each division
+     * @param partySname(String) - party abbreviation
+     * @param threshold(real) - margin threshold
+     * @return boolean telling whether if no results are found with in threshold
      */
     public boolean listMargin(String partySname, double threshold)
     {
@@ -622,9 +698,9 @@ public class FileIO
                     {
                         String out = p.toString() + "," + div.toString(p.getPartyShortName());
                         System.out.println(out);
-                        this.outQueue.enqueue(out);
-                        this.divToVist.enqueue(div);
-                        divMargInRange++;
+                        this.outQueue.enqueue(out);//put output in output queue for potential write to file
+                        this.divToVist.enqueue(div);//store the division for itinerary 
+                        divMargInRange++;//counts the amount of margins found with in threshold
                     }
                     
                 }
@@ -633,12 +709,14 @@ public class FileIO
             }
         }
 
-        return (divMargInRange == 0);//purpose of this is to indicate whether any results have been found
+        return (divMargInRange == 0);//purpose of this is to indicate if no results have been found
     }
 
-    /*
-     * function to sort the nominee list by nominee specified class fields
-     * reference: www.geeksforgeeks.org
+    /**
+     * function to sort the nominee list by nominee specified class fields<br>
+     * this sort uses stack to help with sorting
+     * REFERENCE: www.geeksforgeeks.org
+     * @param field(String) type of field to sort by from nominee class
      */
     public void sortList(String field)
     {
@@ -656,7 +734,7 @@ public class FileIO
                 this.nomList.insertLast(stack.pop());
             }
 
-            stack.push(nom);//put list item in stack if while condition not met
+            stack.push(nom);//put list item in stack while condition not met
         }
 
         while(!stack.isEmpty())
