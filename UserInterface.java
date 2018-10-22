@@ -1,11 +1,20 @@
 //class dealing with user interaction
 //by Kei Wang
 import java.util.*;
+/**
+ *  FILE: UserInterface.java <br>
+ *  PURPOSE: class for user interaction <br>
+ *
+ *  @author Kei Sum Wang - 19126089
+ */
 public class UserInterface
 {
     private String menu;
     private FileIO f;
 
+    /**
+     * DEFAULT Constructor for UserInterface
+     */
     public UserInterface()
     {
         this.menu = "(1)    -List Nominees\n" +
@@ -17,7 +26,10 @@ public class UserInterface
         this.f =  new FileIO();
     }
   
-    //present functions and allows user to use functionality 
+    //present functions and allows user to use functionality
+    /**
+     * method to begin menu selection
+     */ 
     public void run()
     {
         int choose, op, partyOrState, listFilt;
@@ -50,7 +62,7 @@ public class UserInterface
                     listMarginByParty(partyAbrev);
                 break;
                 case 4:
-                    //TODO
+                    f.displayGraph();
                 break;
                 default:
                     System.out.println("invalid choice");
@@ -62,6 +74,11 @@ public class UserInterface
     }
 
     //integer input
+    /**
+     * method for integer input from user.
+     * @param prompt string by implementer
+     * @return integer from input
+     */
     private int intPut(String prompt)
     {
         int input;
@@ -74,6 +91,11 @@ public class UserInterface
     }
 
     //double input
+    /**
+     * method for real input from user.
+     * @param prompt string by implementer
+     * @return real from input
+     */
     private double realInput(String prompt)
     {
         double input;
@@ -86,6 +108,11 @@ public class UserInterface
     }
 
     //string input
+    /**
+     * method for String input from user.
+     * @param prompt string by implementer
+     * @return String from input
+     */
     private String stringInput(String prompt)
     {
         String input;
@@ -97,6 +124,9 @@ public class UserInterface
         return input;
     }
 
+    /**
+     * method to handle listing of nominees
+     */
     public void listNominees()//int option)
     {
         String state, party, div;
@@ -142,6 +172,10 @@ public class UserInterface
         }
     }
 
+    /**
+     * methods to handle search of nominees
+     * @param sname surname string, can contain few or full characters of string
+     */
     public void searchNominees(String sname)//, int option)
     {
         String state, party;
@@ -160,6 +194,10 @@ public class UserInterface
         }
     }
 
+    /**
+     * method to handle listing of margins from party
+     * @param party abbreviation 
+     */
     public void listMarginByParty(String party)
     { 
         double threshold, defaultThreshold;
@@ -197,6 +235,9 @@ public class UserInterface
         }
     }
 
+    /**
+     * method to handle sorting of nominees
+     */
     private void orderByNomFields()
     {
         int op;
@@ -232,6 +273,9 @@ public class UserInterface
 
     }
 
+    /**
+     * method to handle the reading of files
+     */
     private void readFiles()
     {
         boolean hasFiles;
@@ -248,6 +292,9 @@ public class UserInterface
         }
     }
 
+    /**
+     * method to handle the writing of files
+     */
     private void writeFile(String defaultfile)
     {
         String choice, filename;

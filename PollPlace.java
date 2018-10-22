@@ -1,3 +1,9 @@
+/**
+ *  FILE: PollPlace.java <br>
+ *  PURPOSE: class to store PollPlace info <br>
+ *
+ *  @author Kei Sum Wang - 19126089
+ */
 public class PollPlace
 {
     private int candID;
@@ -89,6 +95,10 @@ public class PollPlace
     }
 
 //PRIVATE
+    /**
+     * method to validate string
+     * @param inStr (String)
+     */
     private boolean validateString(String inStr)
     {
         return (!inStr.isEmpty() && inStr != null);

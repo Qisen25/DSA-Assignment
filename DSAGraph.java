@@ -1,12 +1,16 @@
 import java.util.*;
-/*
- * Author Kei Sum Wang - 19126089
- * Graph implementation
- * Reference: graph is based off DSA prac 6 and lecture note 6
+/**
+ *  FILE: DSAGraph.java <br>
+ *  PURPOSE: Implementation of a graph <br>
+ *  REFERENCE: From DSA prac 6
+ *
+ *  @author Kei Sum Wang - 19126089
  */
 public class DSAGraph
 {
-    //Vertex class -private inner class
+    /**
+     * Vertex class -private inner class
+     */
     private class DSAVertex
     {
         private String state;
@@ -43,6 +47,10 @@ public class DSAGraph
             this.links.insertLast(v);
         }
 
+        /**
+         * method to get adjacent list from node
+         * @return list in string form
+         */
         public String adjacentList()
         {
             String str = "";
@@ -52,12 +60,16 @@ public class DSAGraph
             while(it.hasNext())
             {
                 adj = it.next();
-                str += adj.division + " ";
+                str += adj.toString() + " ";
             }
 
             return str;
         }
 
+        /**
+         * method to get edge list from node
+         * @return list in string form
+         */
         public String edgeListString()
         {
             String str = "";
@@ -75,10 +87,13 @@ public class DSAGraph
 
         public String toString()
         {
-            return this.state + "," + this.division;
+            return this.division + "(" + this.state + ")";
         }
     }
 
+    /**
+     * Edge class -private inner class
+     */
     private class DSAEdge
     {
         private DSAVertex v1;
@@ -88,6 +103,7 @@ public class DSAGraph
         private int minutes;
         //consider not using private int seconds;
         private String transport;
+        private boolean visited;
 
         public DSAEdge(DSAVertex inV1, DSAVertex inV2, double dist, int mins, String trans)
         {
@@ -96,13 +112,14 @@ public class DSAGraph
             this.distance = dist;
             this.minutes = mins;
             this.transport = trans;
+            this.visited = false;
         }
 
         public String toString()
         {
-            return "From: " + v1.division + "(" + v1.state + ")" + " to: " +
-                    v2.division + "(" + v2.state + ")" + " distance in m: " + distance +
-                    " minutes: " + minutes + " transport: " + transport;
+            return "From: " + v1.toString() + ", To: " +
+                    v2.toString() + ", Distance: " + distance + "m, " +
+                    "Time: " + minutes + "mins, " + "Mode Of Transport: " + transport;
         }
 
     }
@@ -111,6 +128,9 @@ public class DSAGraph
     //Graph class fields
     private DSALinkedList<DSAVertex> vertices;
 
+    /**
+     * DEFAULT Constructor for graph
+     */
     public DSAGraph()
     {
         this.vertices = new DSALinkedList<DSAVertex>();
@@ -130,7 +150,13 @@ public class DSAGraph
     }
     **/
 
-    //method add vertex
+    /**
+     * method to add vertex(place) to graph
+     * @param state abbreviation of state(String)
+     * @param div name of division(String)
+     * @param latt lattitude(Real)
+     * @param longit lattitude(Real)
+     */
     public void addVertex(String state, String div, double latt, double longit)
     {
         if(this.getVertex(div) == null)//check if vertex doesn't exist then add it, this is to prevent duplicate nodes
@@ -139,8 +165,13 @@ public class DSAGraph
         }
     }
 
-    /*
-     * addEdge
+    /**
+     * method to add edge to graph
+     * @param v1 start vertex
+     * @param v2 end vertex
+     * @param dist distance(Real)
+     * @param mins minutes(int)
+     * @param trans transport type(String)
      */
     public void addEdge(DSAVertex v1, DSAVertex v2, double dist, int mins, String trans)
     {
@@ -150,19 +181,28 @@ public class DSAGraph
         v1.edges.insertLast(new DSAEdge(v1, v2, dist, mins, trans));//create edge, insert
     }
 
-    //method to get vertex count
+    /**
+     * method to get vertex count
+     * @return num of vertex
+     */
     public int getVertexCount()
     {
         return vertices.getCount();
     }
 
-    //method to get list of vertices
+    /**
+     * method to get list of vertices
+     * @return list of vertices
+     */
     public DSALinkedList<DSAVertex> getVertices()
     {
         return vertices;
     }
 
-    //method to get edge count
+    /**
+     * method to get edge count
+     * @return number of edges
+     */
     public int getEdgeCount()
     {
         int numEdge = 0;
@@ -178,7 +218,11 @@ public class DSAGraph
         return numEdge;
     }
 
-    //method to get vertex by label
+    /**
+     * method to get vertex by label
+     * @param inLabel label of vertex(String)
+     * @return vertex
+     */
     public DSAVertex getVertex(String inLabel)
     {
         boolean found = false;
@@ -201,13 +245,22 @@ public class DSAGraph
         return v;
     }
 
-    //getter for vertex adjacency list
+    /**
+     * getter for vertex adjacency list
+     * @param vertex
+     * @return adjacency of vertex
+     */
     public DSALinkedList getAdjacent(DSAVertex vertex)
     {
         return vertex.links;
     }
 
-    //method to check if two vertices are adjacent
+    /**
+     * method to check if two vertices are adjacent
+     * @param v1 vertex
+     * @param v2 vertex
+     * @return boolean telling whether vertices are adjacent
+     */
     public boolean isAdjacent(DSAVertex v1, DSAVertex v2)
     {
         boolean adjacent = false;
@@ -226,8 +279,9 @@ public class DSAGraph
         return adjacent;
     }
 
-//Methods to Display graph
-    
+    /**
+     * Method to Display adjacency list of graph    
+     */
     public void displayList()
     {
         DSAVertex v = null, adj = null;
@@ -238,11 +292,14 @@ public class DSAGraph
         while(it.hasNext())
         {
             v = it.next();
-            System.out.println(v.division + "(" + v.state + ")" + "=> " + v.adjacentList());
+            System.out.println(v.toString() + "=> " + v.adjacentList());
         }
 
     }
     
+    /**
+     * Method to Display edge list of graph    
+     */
     public void displayEdges()
     {
         DSAVertex v = null;
@@ -258,6 +315,9 @@ public class DSAGraph
 
     }
 
+    /**
+     * Method to Display adjacency matrix of graph    
+     */
     public void displayMatrix()
     {
         int[][] matrix = createMatrix();
@@ -283,7 +343,10 @@ public class DSAGraph
     }
 
 //Search Methods
-    //Depth-first-search
+    /**
+     * Depth-first-search
+     * @param v vertex
+     */
     public void DFS(DSAVertex v)
     {
         boolean found;
@@ -329,7 +392,10 @@ public class DSAGraph
 
     }
 
-    //Breadth-first-search
+    /**
+     * Breadth-first-search
+     * @return v vertex
+     */
     public void BFS(DSAVertex v)
     {
         DSAVertex newVertex, front;
@@ -358,7 +424,9 @@ public class DSAGraph
         }
     }
 
-    //Method to clear visit of vertices
+    /**
+     * Method to clear visit of vertices
+     */
     public void clearAllVisits()
     {
         Iterator<DSAVertex> it;
@@ -371,7 +439,10 @@ public class DSAGraph
         }
     }
 
-    //Method to check if all vertices have been visited
+    /**
+     * Method to check if all vertices have been visited
+     * @return boolean if all visited or not
+     */
     public boolean allVisited(DSALinkedList<DSAVertex> list)
     {
         int visits, total;

@@ -1,5 +1,11 @@
 import java.util.*;
 import java.io.*;
+/**
+ *  FILE: FileIO.java <br>
+ *  PURPOSE: class for handling file io <br>
+ *
+ *  @author Kei Sum Wang - 19126089
+ */
 public class FileIO
 {
     private String fileName;
@@ -9,7 +15,9 @@ public class FileIO
     //for insertion sort easier
     private boolean houseConstruct;
     private DSAQueue<String> outQueue;
+    private DSAQueue<String[]> vertexQueue;
     private DSAQueue<Division> divToVist;
+    private DSAGraph graph;
 
     public FileIO()
     {
@@ -17,7 +25,9 @@ public class FileIO
         divList = new DSALinkedList<Division>();
         nomList = new DSALinkedList<Nominee>();
         outQueue = new DSAQueue<String>();
+        vertexQueue = new DSAQueue<String[]>();
         divToVist = new DSAQueue<Division>();
+        graph = new DSAGraph();
         houseConstruct = false;
     }
 
@@ -197,6 +207,103 @@ public class FileIO
         }
     }
 
+    public void graphFromFile(String filename)
+    {
+        FileInputStream fileStrm = null;
+        InputStreamReader rdr;
+        BufferedReader bufRdr;
+        String line, state1, div1, state2, div2;
+        String[] lineArray, paramSplit;
+        double latt1, longit1, latt2, longit2;
+        int count;
+
+        try
+        {
+            fileStrm = new FileInputStream(filename);    
+            rdr = new InputStreamReader(fileStrm);    
+            bufRdr = new BufferedReader(rdr); 
+
+            count = 0;
+            line = bufRdr.readLine();
+            while (line != null)
+            {
+                if(count > 0)
+                {
+                    lineArray = line.split(",");
+                    //from division
+                    state1 = lineArray[0];
+                    div1 = lineArray[1];
+                    latt1 = Double.parseDouble(lineArray[2]);
+                    longit1 = Double.parseDouble(lineArray[3]);
+
+                    //to division
+                    state2 = lineArray[4];
+                    div2 = lineArray[5];
+                    latt2 = Double.parseDouble(lineArray[6]);
+                    longit2 = Double.parseDouble(lineArray[7]);
+
+                    this.graph.addVertex(state1, div1, latt1, longit1);//add from place vertex
+                    this.graph.addVertex(state2, div2, latt2, longit2);//add to place vertex
+
+                    vertexQueue.enqueue(lineArray);//Store the array later when creating edges
+                }
+    
+                count++;
+                line = bufRdr.readLine();
+            }
+        }
+        catch(IOException e)
+        {
+            System.out.println("Error reading file: " + e.getMessage());
+        }
+    }
+
+    public void connectGraph()
+    {
+        String[] array, hrToMin;
+        int mins, hr, min, sec;
+        double dist;
+        String trans;
+       
+       while(!vertexQueue.isEmpty())
+        {
+            array = vertexQueue.dequeue();
+            if(array[8].equals("NONE") || array[9].equals("NONE"))
+            {
+                mins = 0;
+                dist = 0;
+            }
+            else if(array[9].contains(":"))
+            {
+                hrToMin = array[9].split(":");
+                hr = Integer.parseInt(hrToMin[0]);
+                min = Integer.parseInt(hrToMin[1]);
+                sec = Integer.parseInt(hrToMin[2]);
+
+                //convert hrs to mins and temporarily convert min to sec then back to min
+                mins = (hr * 60) + (((min * 60) + sec)/60);
+                dist = Integer.parseInt(array[8]);
+            }
+            else
+            {
+                mins = Integer.parseInt(array[9]);
+                dist = Integer.parseInt(array[8]);
+            }
+            trans = array[10];
+            this.graph.addEdge(graph.getVertex(array[1]), graph.getVertex(array[5]), 
+                               dist, mins, trans);
+        }
+    }
+
+    public void displayGraph()
+    {
+        this.connectGraph();
+        //System.out.println("==Adjacency list==");
+        //graph.displayList();
+        System.out.println("==Edges==");
+        graph.displayEdges();
+    }
+
     //write to file
     public void writeToFile(String output)
     {
@@ -239,6 +346,8 @@ public class FileIO
         files = scanDir.listFiles();
 
         this.readHouseCand("HouseCandidatesDownload-20499.csv");
+        this.graphFromFile("ElectDist1.0.csv");
+        this.graphFromFile("AirportDist1.0.csv");
         for(int i = 0; i < files.length; i++)
         {
             if(files[i].isFile())

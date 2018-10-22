@@ -1,3 +1,9 @@
+/**
+ *  FILE: Nominee.java <br>
+ *  PURPOSE: Nominee class to store Nominee info <br>
+ *
+ *  @author Kei Sum Wang - 19126089
+ */
 public class Nominee extends Politician
 {
     private int nomineeId;
@@ -8,6 +14,9 @@ public class Nominee extends Politician
     private char elected;
     private char HistoricElected;
 
+    /**
+     * DEFAULT Constructor for creating politician
+     */
     public Nominee()
     {
         super();
@@ -19,6 +28,18 @@ public class Nominee extends Politician
         HistoricElected = '?';
     }
 
+    /**
+     * DEFAULT Constructor for creating politician
+     * @param state(String) -state abbreviation
+     * @param div(Division) -Division
+     * @param candId(Integer) -nominee id
+     * @param sname(String) -surname
+     * @param fname(String) -first name
+     * @param balPos(Integer) -ballot position
+     * @param elec(Character) -elected
+     * @param histElec(Character) -historically elected
+     * @param party (Party)
+     */
     public Nominee(String state, Division div, int candId, String sname, String fname, 
                    int balPos, char elec, char histElec, Party party)
     {
@@ -150,6 +171,10 @@ public class Nominee extends Politician
     }
 
 //PRIVATE
+    /**
+     * method to validate string
+     * @param inStr (String)
+     */
     private boolean validateString(String inStr)
     {
         return (!inStr.isEmpty() && inStr != null);
