@@ -89,7 +89,7 @@ public class DSAQueue<E> implements Serializable, Iterable
 
         if(isEmpty())
         {
-            throw new IllegalArgumentException("Stack is empty");
+            throw new IllegalArgumentException("Queue is empty");
         }
         else
         {

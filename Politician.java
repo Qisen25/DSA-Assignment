@@ -6,9 +6,6 @@
  */
 public class Politician
 {
-    /**
-     * politician class fields
-     */
     private String surname;
     private String firstname;
     private Party party;

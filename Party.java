@@ -6,9 +6,6 @@
  */
 public class Party
 {
-    /**
-     * party class fields
-     */
     private String partyAbrev;
     private String partyNm;
     private DSALinkedList<Division> partyDivList;

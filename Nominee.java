@@ -6,9 +6,6 @@
  */
 public class Nominee extends Politician
 {
-    /**
-     * nominee class fields
-     */
     private int nomineeId;
     private String state;
     private Division div;

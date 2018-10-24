@@ -18,7 +18,7 @@ public class FileIO
     private boolean houseConstruct;
     private DSAQueue<String> outQueue;
     private DSAQueue<String[]> vertexQueue;
-    private DSAQueue<Division> divToVist;
+    private DSAQueue<Division> divToVisit;
     private DSAGraph graph;
 
     /**
@@ -31,7 +31,7 @@ public class FileIO
         nomList = new DSALinkedList<Nominee>();
         outQueue = new DSAQueue<String>();
         vertexQueue = new DSAQueue<String[]>();
-        divToVist = new DSAQueue<Division>();
+        divToVisit = new DSAQueue<Division>();
         graph = new DSAGraph();
         houseConstruct = false;
     }
@@ -306,12 +306,14 @@ public class FileIO
             }
             else
             {
-                mins = Integer.parseInt(array[9]);
+                mins = Integer.parseInt(array[9])/60;
                 dist = Integer.parseInt(array[8]);
             }
             trans = array[10];
             this.graph.addEdge(graph.getVertex(array[1]), graph.getVertex(array[5]), 
-                               dist, mins, trans);
+                               dist, mins, trans);//make first connection going TO
+            this.graph.addEdge(graph.getVertex(array[5]), graph.getVertex(array[1]), 
+                               dist, mins, trans);//make second connection for back tracking
         }
     }
 
@@ -323,8 +325,9 @@ public class FileIO
         this.connectGraph();
         //System.out.println("==Adjacency list==");
         //graph.displayList();
-        System.out.println("==Edges==");
-        graph.displayEdges();
+        //System.out.println("==Edges==");
+        //graph.displayEdges();
+        graph.shortPath(this.divToVisit);
     }
 
     //write to file
@@ -682,7 +685,7 @@ public class FileIO
         Nominee nom = null;
         Iterator<Party> itp = partyList.iterator();
         this.outQueue = new DSAQueue<String>();
-        this.divToVist = new DSAQueue<Division>();
+        this.divToVisit = new DSAQueue<Division>();
 
         while(itp.hasNext() && !found)
         {
@@ -699,7 +702,7 @@ public class FileIO
                         String out = p.toString() + "," + div.toString(p.getPartyShortName());
                         System.out.println(out);
                         this.outQueue.enqueue(out);//put output in output queue for potential write to file
-                        this.divToVist.enqueue(div);//store the division for itinerary 
+                        this.divToVisit.enqueue(div);//store the division for itinerary 
                         divMargInRange++;//counts the amount of margins found with in threshold
                     }
                     

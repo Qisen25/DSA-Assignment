@@ -96,28 +96,53 @@ public class DSAGraph
      */
     private class DSAEdge
     {
-        private DSAVertex v1;//from vertex
-        private DSAVertex v2;//to vertex
+        private DSAVertex start;//from vertex
+        private DSAVertex dest;//to vertex
         private double distance;
         private int minutes;
+        private int totalVisitTime;
         private String transport;
         private boolean visited;
 
         public DSAEdge(DSAVertex inV1, DSAVertex inV2, double dist, int mins, String trans)
         {
-            this.v1 = inV1;
-            this.v2 = inV2;
+            this.start = inV1;
+            this.dest = inV2;
             this.distance = dist;
             this.minutes = mins;
+            this.totalVisitTime = 0;
             this.transport = trans;
             this.visited = false;
         }
 
+        public int addVisitDuration()
+        {
+            int visitDur = 0;
+            if(!start.visited && !this.dest.division.contains("Airport") && !this.start.division.contains("Airport"))
+            {
+                visitDur = start.visitDuration + dest.visitDuration;
+                this.totalVisitTime += visitDur;
+            }
+            else if(this.start.division.contains("Airport") && !this.dest.division.contains("Airport"))
+            {
+                visitDur = dest.visitDuration;
+                this.totalVisitTime += visitDur;
+            }
+            else if(start.visited && !this.dest.division.contains("Airport") && !this.start.division.contains("Airport"))
+            {
+                visitDur = dest.visitDuration;
+                this.totalVisitTime += visitDur;
+            }
+
+
+            return visitDur;
+        }
+
         public String toString()
         {
-            return "From: " + v1.toString() + ", To: " +
-                    v2.toString() + ", Distance: " + distance + "m, " +
-                    "Time: " + minutes + "mins, " + "Mode Of Transport: " + transport;
+            return "From: " + start.toString() + ", To: " +
+                    dest.toString() + ", Distance: " + distance + "m, " +
+                    "Time: " + minutes + "mins, " + "Mode Of Transport: " + transport + ", Time for meet/greet: " + totalVisitTime + "mins";
         }
 
     }
@@ -423,38 +448,165 @@ public class DSAGraph
     }
 
     /**
-     * Shortest path
+     * Shortest path not complete<br>
+     * based on breadth first search.
      * @param v vertex
      */
-    public void shortPath(DSAQueue<DSAVertex> vertexQ)
+    public void shortPath(DSAQueue<Division> vertexQ)
     {
+        boolean found = false;
+        int shortTime = Integer.MAX_VALUE;
+        int totalTravelTime = 0, meetGreet = 0, curMeet, totalTime;
         DSAVertex newVertex, front, v;
+        DSAEdge curEdge;
         DSAQueue<DSAVertex> queue;
-        Iterator<DSAVertex> vLinks;
+        Iterator<DSAEdge> edg;
+        Iterator<Division> divQ;
 
         queue = new DSAQueue<DSAVertex>();
         this.clearAllVisits();//mark all vertices as new
-        v = vertexQ.dequeue();
+        v = this.getVertex(vertexQ.dequeue().getDivName());
         v.visited = true;
+
+        meetGreet += v.visitDuration;//initially will be meeting and greeting for 3 hours at start location
+        if(vertexQ.isEmpty())
+        {
+            System.out.println("No travel, only visit at " + v.toString());
+        }
 
         queue.enqueue(v);
         while(!queue.isEmpty())
         {
+            curMeet = 0;
+            found = false;
             front = queue.dequeue();//get front of queue
-            vLinks = front.links.iterator();
-            while(vLinks.hasNext())
+            //System.out.println(front.division);
+            edg = front.edges.iterator();
+            while(edg.hasNext() && !found && !vertexQ.isEmpty())
             {
-                newVertex = vLinks.next();
-                if(!newVertex.visited)
+                divQ = vertexQ.iterator();
+                curEdge = edg.next();
+                //totalTravelTime =  curEdge.minutes;
+                //System.out.println(curEdge.dest.division);
+                //if(!vertexQ.isEmpty() && !curEdge.dest.visited && totalTravelTime < shortTime && curEdge.dest.equals(getVertex(vertexQ.peek().getDivName()))) 
+                if(!curEdge.dest.visited && curEdge.dest.equals(getVertex(vertexQ.peek().getDivName()))) 
                 {
-                    System.out.println(front.division + "->" + newVertex.division);
-                    newVertex.visited = true;
-                    queue.enqueue(newVertex);
+                    curMeet = curEdge.addVisitDuration();
+                    System.out.println(curEdge.toString());
+                    shortTime = curEdge.minutes;
+                    curEdge.dest.visited = true;
+                    curEdge.visited = true;
+                    found = true;
+                    queue.enqueue(curEdge.dest);
+                    vertexQ.dequeue().getDivName();
+                    meetGreet += curMeet;
+                    totalTravelTime += curEdge.minutes;
+                }
+                else if(!containNeighbour(curEdge.dest, vertexQ.peek())) 
+                {
+                    //System.out.println(curEdge.dest.division + " " + vertexQ.peek().getState());
+                    //System.out.println(curEdge.dest.division + " " + front.state);
+                    if(curEdge.dest.division.contains("Airport") && curEdge.dest.state.equals(front.state))
+                    {
+                        curMeet = curEdge.addVisitDuration();
+                        System.out.println(curEdge.toString() + 1.0);
+                        curEdge.dest.visited = true;
+                        curEdge.visited = true;
+                        queue.enqueue(curEdge.dest);
+                        meetGreet += curMeet;
+                        totalTravelTime += curEdge.minutes;
+                    }
+                    if(curEdge.dest.division.contains("Airport") && curEdge.dest.state.equals(vertexQ.peek().getState()))
+                    {
+                        curMeet = curEdge.addVisitDuration();
+                        System.out.println(curEdge.toString() + 2.0);
+                        curEdge.dest.visited = true;
+                        curEdge.visited = true;
+                        queue.enqueue(curEdge.dest);
+                        meetGreet += curMeet;
+                        totalTravelTime += curEdge.minutes;
+                    }
+                    //System.out.println(!curEdge.dest.visited && curEdge.dest.division.contains("Airport") && curEdge.dest.state.equals(vertexQ.peek().getState()));
+                    //System.out.println(vertexQ.peek().getState() + " " + curEdge.dest.division);
+                }
+                else
+                {
+                    if(curEdge.dest.division.contains("Airport") && curEdge.dest.state.equals(vertexQ.peek().getState()) && curEdge.transport.equals("plane"))
+                    {
+                        curMeet = curEdge.addVisitDuration();
+                        System.out.println(curEdge.toString() + 3.0);
+                        curEdge.dest.visited = true;
+                        curEdge.visited = true;
+                        queue.enqueue(curEdge.dest);
+                        meetGreet += curMeet;
+                        totalTravelTime += curEdge.minutes;
+                    }
+                    /**
+                    if(curEdge.dest.state.equals(vertexQ.peek().getState()))
+                    {
+                        //System.out.println(curEdge.toString() + 3.0);
+                        curEdge.dest.visited = true;
+                        curEdge.visited = true;
+                        queue.enqueue(curEdge.dest);
+                    }
+                    **/
+                }
+            //System.out.println("time meet and greets: " + meetGreet + "mins" + front.division);
+            }
+
+        }
+            System.out.println("===Campaign Summary===");
+            System.out.println("Total travel time for journey: " + totalTravelTime + "mins");
+            System.out.println("Total time for meet and greets: " + meetGreet + "mins");
+            System.out.println("Total time overall for campaign: " + (totalTravelTime+meetGreet) + "mins");
+    }
+
+    public boolean containNeighbour(DSAVertex division, Division needDiv)
+    {
+        boolean found = false;
+        DSAVertex v = null;
+        Iterator<DSAVertex> adjList;
+        adjList = division.links.iterator();
+
+        while(adjList.hasNext() && !found)
+        {
+            v = adjList.next();
+            if(v.division.equals(needDiv.getDivName()))
+            {
+                found = true;
+            }
+        }
+
+        return found;
+    }
+/**
+    public boolean partOfMargin(DSAQueue<Division> queue, DSAVertex start)
+    {
+        Division div = null;
+        DSAEdge e = null;
+        int total, match;
+        boolean found = false;
+        Iterator<Division> it = queue.iterator();
+        Iterator<DSAEdge> ite = start.edges.iterator();
+
+        total = queue.getCount();
+        match = 0;
+        while(ite.hasNext())
+        {
+            e = ite.next();
+            while(it.hasNext() && !found)
+            {
+                div = it.next();
+                if(e.start.equals(start) && e.dest.equals(getVertex(div.getDivName())))
+                {
+                    match++;    
                 }
             }
         }
+        return ((match / total) == 1);
     }
-
+    **/
+            
     /**
      * Method to clear visit of vertices
      */

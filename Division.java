@@ -7,9 +7,6 @@ import java.util.*;
  */
 public class Division
 {
-    /**
-     * division class fields
-     */
     private int divID;
     private String divNm;
     private String state;
@@ -63,6 +60,15 @@ public class Division
     public String getDivName()
     {
         return this.divNm;
+    }
+
+    /**
+     * method to get state abbreviation
+     * @return state abbreviation(String)
+     */
+    public String getState()
+    {
+        return this.state;
     }
 
     /**

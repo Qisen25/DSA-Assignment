@@ -6,9 +6,6 @@
  */
 public class PollPlace
 {
-    /**
-     * poll place class fields
-     */
     private int candID;
     private String partyAb;
     private int pollPlaceID;
