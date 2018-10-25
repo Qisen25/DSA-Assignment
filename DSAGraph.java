@@ -463,7 +463,7 @@ public class DSAGraph
         Iterator<DSAEdge> edg;
         Iterator<Division> divQ;
 
-        queue = new DSAQueue<DSAVertex>();
+        queue = sortDivQueue(vertexQ);
         this.clearAllVisits();//mark all vertices as new
         v = this.getVertex(vertexQ.dequeue().getDivName());
         v.visited = true;
@@ -560,6 +560,48 @@ public class DSAGraph
             System.out.println("Total time for meet and greets: " + meetGreet + "mins");
             System.out.println("Total time overall for campaign: " + (totalTravelTime+meetGreet) + "mins");
     }
+    
+    public DSALinkedList<DSAVertex> sortDivQueue(DSAQueue<Division> divQueue)
+    {
+        DSALinkedList<DSAVertex> sortedQ = new DSALinkedList<DSAVertex>();
+        DSALinkedList<DSAVertex> queueHelp = new DSALinkedList<DSAVertex>();
+        DSALinkedList<DSAVertex> queue = new DSALinkedList<DSAVertex>();
+        Division cur = null;
+
+        Iterator<Division> it = divQueue.iterator();
+
+        sortedQ.insertLast(getVertex(divQueue.dequeue().getDivName()));//store the first location in queue first since it is chosen div to visit 1st
+
+        while(it.hasNext())
+        {
+            cur = it.next();
+            if(cur.getState().equals(sortedQ.peekLast().state))
+            {
+                sortedQ.insertLast(getVertex(cur.getDivName()));
+            }
+            else
+            {
+                queue.insertLast(getVertex(cur.getDivName()));
+            }
+        }
+
+
+        while(!queue.isEmpty())
+        {
+            DSAVertex temp = sortedQ.peekLast();
+
+            if(fastInterstateByPlane(temp.state, divQueue).equals(queue.peek().state)
+            {
+                sortedQ.insertLast(stack.pop());
+            }
+            else
+            {
+                queue.enqueue(queue.dequeue());
+            }
+       }
+
+        return sortedQ;
+    }
 
     public boolean containNeighbour(DSAVertex division, Division needDiv)
     {
@@ -579,34 +621,71 @@ public class DSAGraph
 
         return found;
     }
-/**
-    public boolean partOfMargin(DSAQueue<Division> queue, DSAVertex start)
+    
+    public String fastInterstateByPlane(DSAVertex fromDiv, DSAQueue<Division> div)
     {
-        Division div = null;
-        DSAEdge e = null;
-        int total, match;
-        boolean found = false;
-        Iterator<Division> it = queue.iterator();
-        Iterator<DSAEdge> ite = start.edges.iterator();
+        int totalTime = 0, temp = 0, quickest = 0;
+        DSAEdge curEdg = null;
+        DSAVertex airport = null, shortDiv = null;
+        DSAStack<Integer> timeStack = new DSAStack<Integer>();
+        Iterator<DSAEdge> edgeIt;
 
-        total = queue.getCount();
-        match = 0;
-        while(ite.hasNext())
+        airport = findAirportFromDiv(fromDiv);
+        edgeIt = airport.edges.iterator();
+
+        while(edgeIt.hasNext())
         {
-            e = ite.next();
-            while(it.hasNext() && !found)
+            curEdg = edgeIt.next();
+            if(curEdg.dest.division.contains("Airport") && !curEdg.dest.state.equals(airport.state) && matchStates(curEdge.dest.state, div))
             {
-                div = it.next();
-                if(e.start.equals(start) && e.dest.equals(getVertex(div.getDivName())))
+                if(curEdg.distance <= quickest)
                 {
-                    match++;    
+                    quickest = curEdg.distance;
+                    shortState = curEdg.dest;
                 }
             }
         }
-        return ((match / total) == 1);
+        return shortState.state;
     }
-    **/
-            
+
+    public boolean matchStates(String state, DSAQueue<Division> div)
+    {
+        boolean found = false;
+        Division cur = null;
+        Iterator<Division> it = div.iterator();
+
+        while(it.hasNext() && !found)
+        {
+            cur = it.next();
+            found = (state.equals(cur.getState()));
+        }
+
+        return found;
+    }
+
+    public DSAVertex findAirportFromDiv(DSAVertex fromDiv)
+    {
+        boolean found = false;
+        int totalTime = 0, temp = 0;
+        DSAEdge curEdg = null;
+        DSAVertex airport = null;
+        Iterator<DSAEdge> edgeIt;
+
+        edgeIt = fromDiv.edges.iterator();
+
+        while(edgeIt.hasNext() && !found)
+        {
+            curEdg = edgeIt.next();
+            if(curEdg.dest.division.contains("Airport") && curEdg.dest.state.equals(fromState.state))
+            {
+                found = true;
+                airport = curEdge.dest;
+            }
+        }
+
+        return airport;
+    }
+                
     /**
      * Method to clear visit of vertices
      */

@@ -375,7 +375,7 @@ public class FileIO
         files = scanDir.listFiles();
 
         this.readHouseCand("HouseCandidatesDownload-20499.csv");
-        this.graphFromFile("ElectDist1.0.csv");
+        this.graphFromFile("ElectDist1.1.csv");
         this.graphFromFile("AirportDist1.0.csv");
         for(int i = 0; i < files.length; i++)
         {
