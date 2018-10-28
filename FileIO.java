@@ -320,14 +320,15 @@ public class FileIO
     /**
      * method to display graph connections
      */
-    public void displayGraph()
+    public void displayItinerary(String itLoc)
     {
         this.connectGraph();
         //System.out.println("==Adjacency list==");
         //graph.displayList();
         //System.out.println("==Edges==");
         //graph.displayEdges();
-        graph.shortPath(this.divToVisit);
+        graph.shortPathv2(this.divToVisit, itLoc);
+        //graph.shortPath(this.divToVisit);
     }
 
     //write to file

@@ -33,7 +33,7 @@ public class UserInterface
     public void run()
     {
         int choose, op, partyOrState, listFilt;
-        String fileName, partyAbrev, sname;
+        String fileName, partyAbrev, sname, itPlace;
         
         //search and read require files in current directory
         readFiles();
@@ -53,16 +53,17 @@ public class UserInterface
                     listNominees();//listFilt);         
                 break;
                 case 2:
-                    sname = stringInput("Enter first few letters or complete surname of nominee: ");
+                    sname = stringInput("Enter first few letters or complete surname of nominee:> ");
                     //partyOrState = intPut("=Filter by=\n(1)state\n(2)party\nchoice:>");
                     searchNominees(sname);//, partyOrState);          
                 break;
                 case 3:
-                    partyAbrev = stringInput("Enter party abbreviation: ");
+                    partyAbrev = stringInput("Enter party abbreviation:> ");
                     listMarginByParty(partyAbrev);
                 break;
                 case 4:
-                    f.displayGraph();
+                    itPlace = stringInput("Enter a division name from itinerary list:> ");
+                    f.displayItinerary(itPlace);
                 break;
                 default:
                     System.out.println("invalid choice");

@@ -15,14 +15,14 @@ public class main
             UserInterface i = new UserInterface();
             i.run();
         //}
-       // catch(IllegalArgumentException ex)
-        //{
-          //  System.out.println("Incorrect parameter in file: " + 
-        //                        ex.getMessage());
+        //catch(IllegalArgumentException ex)
+        ///{
+            //System.out.println("Incorrect parameter in file: " + 
+         //                       ex.getMessage());
         //}
- //       catch(Exception e)
-   //     {
-       //     System.out.println(e.getMessage());
-     //   }
+        //catch(Exception e)
+        //{
+          //  System.out.println(e.getMessage());
+        //}
     }
 }
