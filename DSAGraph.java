@@ -22,6 +22,7 @@ public class DSAGraph
         private DSALinkedList<DSAVertex> links;//edge list
         private boolean visited;
         private boolean mustVisit;
+        private boolean passThrough;
         private boolean airportForCampaign;
         private int visitDuration;
 
@@ -35,20 +36,9 @@ public class DSAGraph
             this.links = new DSALinkedList<DSAVertex>();
             this.visited = false;
             this.mustVisit = false;
+            this.passThrough = false;
             this.airportForCampaign = false;
             this.visitDuration = 180;//3 hours(180 minutes) to meet and greet
-        }
-
-        //maybe remove this
-        public void addEdge(DSAEdge edge)
-        {
-            this.edges.insertLast(edge);
-        }
-
-        //remove this maybe
-        public void addAdjVertex(DSAVertex v)
-        {
-            this.links.insertLast(v);
         }
 
         /**
@@ -119,6 +109,10 @@ public class DSAGraph
             this.visited = false;
         }
 
+        /**
+         * method to add meet/greet hours to the total time
+         * @return visitDur - total visitation hours
+         */
         public int addVisitDuration()
         {
             int visitDur = 0;
@@ -154,6 +148,7 @@ public class DSAGraph
 
     //Graph class fields
     private DSALinkedList<DSAVertex> vertices;
+    private DSAQueue<String> writeToFile;
 
     /**
      * DEFAULT Constructor for graph
@@ -161,6 +156,7 @@ public class DSAGraph
     public DSAGraph()
     {
         this.vertices = new DSALinkedList<DSAVertex>();
+        this.writeToFile = new DSAQueue<String>();
     }
 
     /**
@@ -437,117 +433,14 @@ public class DSAGraph
         }
     }
 
-    /**
-     * Shortest path not complete<br>
-     * based on breadth first search.
-     * @param v vertex
-     */
-    public void shortPath(DSAQueue<Division> vertexQ)
-    {
-        boolean found = false;
-        int shortTime = Integer.MAX_VALUE;
-        int totalTravelTime = 0, meetGreet = 0, curMeet, totalTime;
-        DSAVertex newVertex, front, v;
-        DSAEdge curEdge;
-        DSAQueue<DSAVertex> queue;
-        Iterator<DSAEdge> edg;
-        Iterator<Division> divQ;
-
-        sortDivQueue(vertexQ);
-        queue = new DSAQueue<DSAVertex>();
-        this.clearAllVisits();//mark all vertices as new
-        v = this.getVertex(vertexQ.dequeue().getDivName());
-        v.visited = true;
-
-        meetGreet += v.visitDuration;//initially will be meeting and greeting for 3 hours at start location
-        if(vertexQ.isEmpty())
-        {
-            System.out.println("No travel, only visit at " + v.toString());
-        }
-
-        queue.enqueue(v);
-        while(!queue.isEmpty())
-        {
-            curMeet = 0;
-            found = false;
-            front = queue.dequeue();//get front of queue
-            //System.out.println(front.division);
-            edg = front.edges.iterator();
-            while(edg.hasNext() && !found && !vertexQ.isEmpty())
-            {
-                divQ = vertexQ.iterator();
-                curEdge = edg.next();
-                //totalTravelTime =  curEdge.minutes;
-                //System.out.println(curEdge.dest.division);
-                //if(!vertexQ.isEmpty() && !curEdge.dest.visited && totalTravelTime < shortTime && curEdge.dest.equals(getVertex(vertexQ.peek().getDivName()))) 
-                if(!curEdge.dest.visited && curEdge.dest.equals(getVertex(vertexQ.peek().getDivName()))) 
-                {
-                    curMeet = curEdge.addVisitDuration();
-                    System.out.println(curEdge.toString());
-                    shortTime = curEdge.minutes;
-                    curEdge.dest.visited = true;
-                    curEdge.visited = true;
-                    found = true;
-                    queue.enqueue(curEdge.dest);
-                    vertexQ.dequeue().getDivName();
-                    meetGreet += curMeet;
-                    totalTravelTime += curEdge.minutes;
-                }
-                else if(!containNeighbour(curEdge.dest, vertexQ.peek())) 
-                {
-                    //System.out.println(curEdge.dest.division + " " + vertexQ.peek().getState());
-                    //System.out.println(curEdge.dest.division + " " + front.state);
-                    if(curEdge.dest.division.contains("Airport") && curEdge.dest.state.equals(front.state))
-                    {
-                        curMeet = curEdge.addVisitDuration();
-                        System.out.println(curEdge.toString() + 1.0);
-                        curEdge.dest.visited = true;
-                        curEdge.visited = true;
-                        queue.enqueue(curEdge.dest);
-                        meetGreet += curMeet;
-                        totalTravelTime += curEdge.minutes;
-                    }
-                    if(curEdge.dest.division.contains("Airport") && curEdge.dest.state.equals(vertexQ.peek().getState()))
-                    {
-                        curMeet = curEdge.addVisitDuration();
-                        System.out.println(curEdge.toString() + 2.0);
-                        curEdge.dest.visited = true;
-                        curEdge.visited = true;
-                        queue.enqueue(curEdge.dest);
-                        meetGreet += curMeet;
-                        totalTravelTime += curEdge.minutes;
-                    }
-                    //System.out.println(!curEdge.dest.visited && curEdge.dest.division.contains("Airport") && curEdge.dest.state.equals(vertexQ.peek().getState()));
-                    //System.out.println(vertexQ.peek().getState() + " " + curEdge.dest.division);
-                }
-                else
-                {
-                    if(curEdge.dest.division.contains("Airport") && curEdge.dest.state.equals(vertexQ.peek().getState()) && curEdge.transport.equals("plane"))
-                    {
-                        curMeet = curEdge.addVisitDuration();
-                        System.out.println(curEdge.toString() + 3.0);
-                        curEdge.dest.visited = true;
-                        curEdge.visited = true;
-                        queue.enqueue(curEdge.dest);
-                        meetGreet += curMeet;
-                        totalTravelTime += curEdge.minutes;
-                    }
-                }
-            //System.out.println("time meet and greets: " + meetGreet + "mins" + front.division);
-            }
-
-        }
-            System.out.println("===Campaign Summary===");
-            System.out.println("Total travel time for journey: " + totalTravelTime + "mins");
-            System.out.println("Total time for meet and greets: " + meetGreet + "mins");
-            System.out.println("Total time overall for campaign: " + (totalTravelTime+meetGreet) + "mins");
-    }
-
     //implement a must visit for each node
     //then search for any node that needs to be visited and has the shortest time
     /**
      * Shortest pathv2 not complete<br>
-     * based on breadth first search and some what Dijkstra algorithm
+     * based on breadth first search and some what Dijkstra algorithm<br>
+     * Please see justification report for reason why my algo is not really optimal<br>
+     * @param divQueue - Divisions from margin stored in a queue to help prepare traversal
+     * @param divName - name of start division for traversal
      */
     public void shortPathv2(DSAQueue<Division> divQueue, String divName)
     {
@@ -562,15 +455,16 @@ public class DSAGraph
 
         
 
-        toVisit = setupMustVisits(divQueue);
+        toVisit = setupMustVisits(divQueue);//setup the the nodes of the graph based on itinerary, mark them as must visits
         queue = new DSAQueue<DSAVertex>();
         this.clearAllVisits();//mark all vertices as new
+        setAltPath(toVisit);//check if existing nodes that don't have many reach points that set an alternate path to go through to visit
         v = this.getVisitVertex(divName);// enter a location name that is part of the margin list
         v.visited = true;
         System.out.println("====Optimal Path for campaign starting from division: " + v.toString() + "====");
 
         meetGreet += v.visitDuration;//initially will be meeting and greeting for 3 hours at start location
-        if(toVisit.getCount() == 1)
+        if(toVisit.getCount() == 1)//if there is only one division in itinerary
         {
             System.out.println("No travel, only visit at " + v.toString());
         }
@@ -581,39 +475,119 @@ public class DSAGraph
             curMeet = 0;
             found = false;
             front = queue.dequeue();//get front of queue
-            //System.out.println(front.division);
             edg = front.edges.iterator();
-            System.out.println(!campaignDone(toVisit));
+            //System.out.println(!campaignDone(toVisit));
             while(edg.hasNext() && !found)
             {
                 curEdge = edg.next();
                 //totalTravelTime =  curEdge.minutes;
                 //System.out.println(curEdge.dest.division);
                 //if(!vertexQ.isEmpty() && !curEdge.dest.visited && totalTravelTime < shortTime && curEdge.dest.equals(getVertex(vertexQ.peek().getDivName()))) 
-                if(!stateAllVisit(front) && findFastNeighbour(front).equals(curEdge.dest)) 
+                if(!stateAllVisit(front))//check if the current node in queue, state has all the nodes visited 
                 {
-                    curMeet = curEdge.addVisitDuration();
-                    System.out.println(curEdge.toString());
-                    shortTime = curEdge.minutes;
-                    curEdge.dest.visited = true;
-                    curEdge.visited = true;
-                    found = true;
-                    queue.enqueue(curEdge.dest);
-                    meetGreet += curMeet;
-                    totalTravelTime += curEdge.minutes;
+                    //check if any nodes are needed to pass through to get nodes that can't be reached by most nodes
+                    if(curEdge.dest.passThrough && anyPassThrough(curEdge.dest) && curEdge.transport.equals("car"))//check if node and its neighbours need to be passed by car
+                    {
+                        System.out.println(curEdge.toString());
+                        writeToFile.enqueue(curEdge.toString());
+                        shortTime = curEdge.minutes;//get current time
+                        curEdge.dest.visited = true;
+                        curEdge.visited = true;//mark as visited
+                                    
+                        curEdge.start.passThrough = false;//set passthrough as false since we have already visited the mustVisit node
+                        found = true;
+                        queue.enqueue(curEdge.dest);
+                        meetGreet += curMeet;//add current meet duration
+                        totalTravelTime += curEdge.minutes;
+                    }
+                    else
+                    {
+                        if(curEdge.dest.passThrough)//node is a passthrough then set visited to false if we need to return just in case
+                                                    //if there are no other nodes to visit
+                        {
+                            curEdge.dest.visited = false;
+                        }
+
+                        DSAVertex tempNBR = findFastNeighbour(front);//get fastest neighbour by car 
+                    //if(!stateAllVisit(front) && findFastNeighbour(front).equals(curEdge.dest)) 
+                        if(tempNBR != null)
+                        {
+                        //System.out.println(curEdge.dest.division);
+                           //System.out.println(
+                            if(tempNBR.equals(curEdge.dest) && curEdge.transport.equals("car"))//make sure current dest matches the fastest neighbour
+                            {
+                                if(matchDivs(curEdge.dest.division, toVisit))//if dest is part of itinerary then add meet greet duration
+                                {
+                                    curMeet = curEdge.addVisitDuration();
+                                }
+                                else//if it is a pass node then set node pass through to false since its already traversed and longer priority
+                                {
+                                    //curEdge.dest.mustVisit = false;
+                                    curEdge.dest.passThrough = false;
+                                }
+                                System.out.println(curEdge.toString());
+                                writeToFile.enqueue(curEdge.toString());
+                                shortTime = curEdge.minutes;
+                                curEdge.dest.visited = true;
+                                curEdge.start.visited = true;
+                                front.visited = true;
+                                curEdge.visited = true;//make sure current edge is completely visited
+                                found = true;
+                                queue.enqueue(curEdge.dest);
+                                meetGreet += curMeet;
+                                totalTravelTime += curEdge.minutes;
+                            }
+                        }
+                        else// if no fast neighbour is found then look for an airport with in the state
+                        {
+                            //curEdge.dest.visited = false;
+                            //System.out.println(curEdge.dest.division);
+                            //tempNBR = findFastNeighbour(curEdge.dest);
+            
+                                if(curEdge.dest.division.contains("Airport") && curEdge.dest.state.equals(front.state))
+                                {
+                                    System.out.println(curEdge.toString());
+                                    writeToFile.enqueue(curEdge.toString());
+                                    shortTime = curEdge.minutes;
+                                    curEdge.dest.mustVisit = false;
+                                    curEdge.dest.visited = true;
+                                    curEdge.visited = true;
+                                    found = true;
+                                    queue.enqueue(curEdge.dest);
+                                    meetGreet += curMeet;
+                                    totalTravelTime += curEdge.minutes;
+                                }
+                                else if(curEdge.dest.division.equals(front.division))
+                                {
+                                    System.out.println(curEdge.toString());
+                                    writeToFile.enqueue(curEdge.toString());
+                                    shortTime = curEdge.minutes;
+                                    curEdge.dest.mustVisit = false;
+                                    curEdge.dest.visited = true;
+                                    curEdge.visited = true;
+                                    found = true;
+                                    queue.enqueue(curEdge.dest);
+                                    meetGreet += curMeet;
+                                    totalTravelTime += curEdge.minutes;
+                                }
+                        
+                        }
+                    }
                 }
+                //check if a division connects to a division that it not connected to a must visit
                 //else if(curEdge.dest.mustVisit && curEdge.start.division.contains("Airport") && findFastNeighbour(curEdge.dest).equals(curEdge.start))
                 //else if(curEdge.dest.mustVisit && curEdge.start.division.contains("Airport") && findFastNeighbour(curEdge.dest).equals(curEdge.start))
-                else if(stateAllVisit(front) && !campaignDone(toVisit)) 
+                else if(stateAllVisit(front) && !campaignDone(toVisit))// if the front of queue has all states visited and campaign not done 
                 {
                     //System.out.println(stateAllVisit(front) && !campaignDone(toVisit)); 
                     //System.out.println(curEdge.dest.division + " " + vertexQ.peek().getState());
                     //System.out.println(curEdge.dest.division + " " + front.state);
                     if(!curEdge.start.division.contains("Airport") && curEdge.dest.division.contains("Airport") && curEdge.transport.equals("car") &&
-                        curEdge.dest.airportForCampaign)
+                        curEdge.dest.airportForCampaign)//look for nearest airport within the division
                     {
                         curMeet = curEdge.addVisitDuration();
-                        System.out.println(curEdge.toString() + 1.0);
+                        System.out.println(curEdge.toString());
+                        writeToFile.enqueue(curEdge.toString());
                         curEdge.dest.visited = true;
                         curEdge.visited = true;
                         found = true;
@@ -621,23 +595,24 @@ public class DSAGraph
                         meetGreet += curMeet;
                         totalTravelTime += curEdge.minutes;
                     }
-                    else if(curEdge.dest.mustVisit && curEdge.start.division.contains("Airport") && !curEdge.dest.division.contains("Airport") &&
-                            !curEdge.dest.visited)
+                    else if(curEdge.dest.airportForCampaign && curEdge.start.division.contains("Airport") && !curEdge.dest.division.contains("Airport") &&
+                            !curEdge.dest.visited)//otherwise if current edge is an airport and the destination is not an airport
                     {
-                        if(!stateHasOwnAirport(curEdge.dest))
+                        if(!stateHasOwnAirport(curEdge.dest))//check if a destination has its own airport, needed since the ACT didn't have airport in csv
                         {
-                            DSAVertex tempAir = findNearAirportFromDiv(curEdge.dest);
+                            DSAVertex tempAir = findNearAirportFromDiv(curEdge.dest);//find the nearest airport within division
                             //System.out.println(tempAir != null);
                             if(tempAir != null)
                             {
                                 //System.out.println(curEdge.dest.division);
-                                if(tempAir.equals(curEdge.start))
+                                if(tempAir.equals(curEdge.start))// make sure the airport matches the destination aiport
                                 {
                                     curMeet = curEdge.addVisitDuration();
                                     System.out.println(curEdge.toString());
+                                    writeToFile.enqueue(curEdge.toString());
                                     shortTime = curEdge.minutes;
                                     curEdge.dest.visited = true;
-                                    curEdge.visited = true;
+                                    curEdge.visited = true;//make sure edge is visited
                                     found = true;
                                     queue.enqueue(curEdge.dest);
                                     meetGreet += curMeet;
@@ -646,17 +621,18 @@ public class DSAGraph
                             }
                         }
                     }
-                    else if(curEdge.start.division.contains("Airport") && curEdge.transport.equals("plane") && !curEdge.dest.visited)
+                    else if(curEdge.start.division.contains("Airport") && curEdge.transport.equals("plane") && !curEdge.dest.visited)//check if edge is flight
                     {
-                        DSAVertex temp = fastInterstateByPlane(curEdge.start);
+                        DSAVertex temp = fastInterstateByPlane(curEdge.start);//get fastest flight by interstate
 
                         if(temp != null)
                         {
-                            if(temp.equals(curEdge.dest))
+                            if(temp.equals(curEdge.dest))//make sure the flight matches the destination
                             {
                                 //System.out.println(fastInterstateByPlane();
                                 curMeet = curEdge.addVisitDuration();
-                                System.out.println(curEdge.toString() + 3.0);
+                                System.out.println(curEdge.toString());
+                                writeToFile.enqueue(curEdge.toString());
                                 curEdge.dest.visited = true;
                                 curEdge.visited = true;
                                 found = true;
@@ -675,37 +651,178 @@ public class DSAGraph
             System.out.println("Total time for meet and greets: " + meetGreet + "mins");
             System.out.println("Total time overall for campaign: " + (totalTravelTime+meetGreet) + "mins");
 
-            resetItinerary(toVisit);
+            resetItinerary(toVisit);//reset the itinerary map after campaign traversal done
+            clearAllVisits();
     }
 
+    /**
+     * method to set up the nodes that need to be visited<br>
+     * @param divQ - Queue containing the require division for itinerary traversal
+     * @return retQ - return copy of imported queue
+     */
     public DSAQueue<Division> setupMustVisits(DSAQueue<Division> divQ)
     {
         Division temp = null;
+        DSAVertex airport = null;
         DSAQueue<Division> retQ = new DSAQueue<Division>();
 
         while(!divQ.isEmpty())
         {
             temp = divQ.dequeue();
-            getVertex(temp.getDivName()).mustVisit = true;
-            findAirportFromDiv(getVertex(temp.getDivName())).airportForCampaign = true;
+            getVertex(temp.getDivName()).mustVisit = true;// find the vertex and set to mustVisit
+            airport = findAirportFromDiv(getVertex(temp.getDivName()));
+            if(airport != null)//if airport exists then set
+            {
+                airport.airportForCampaign = true;
+            }
             retQ.enqueue(temp);
         }
+
 
         return retQ;
     }
 
+    /**
+     * method to reset the graph mustVisit flag
+     * @param divQ - containing the require divisions
+     */
     public void resetItinerary(DSAQueue<Division> divQ)
     {
+        DSAVertex airport = null;
         Division temp = null;
 
         while(!divQ.isEmpty())
         {
             temp = divQ.dequeue();
             getVertex(temp.getDivName()).mustVisit = false;
-            findAirportFromDiv(getVertex(temp.getDivName())).airportForCampaign = false;
+            airport = findAirportFromDiv(getVertex(temp.getDivName()));
+            if(airport != null)
+            {
+                airport.airportForCampaign = false;
+            }
         }
     }
 
+    /**
+     * method to set up an alternative path when a node doesn't have many reachable node
+     * @param divQ - queue containing the required divisions
+     */
+    public void setAltPath(DSAQueue<Division> divQ)
+    {
+        DSAVertex airport = null;
+        Division cur = null;
+        Iterator<Division> it = divQ.iterator();
+
+        while(it.hasNext())
+        {
+            cur = it.next();
+            setPathToVisit(getVertex(cur.getDivName()));
+            airport = findAirportFromDiv(getVertex(cur.getDivName()));
+            if(airport != null)
+            {
+                setPathToVisit(airport);
+            }
+        }
+    }
+
+    /**
+     * method to set up the paths to visit<br>
+     * this is used to help setAltPath method
+     * @param div - the division vertex
+     */
+    public void setPathToVisit(DSAVertex div)
+    {
+        DSAVertex cur = null;
+        Iterator<DSAVertex> it = div.links.iterator();
+
+        while(it.hasNext())
+        {
+            cur = it.next();
+            if(!anyMustVisits(div))
+            {
+                cur.mustVisit = true;
+                cur.passThrough = true;
+                div.passThrough = true;// let division pair with current passThrough
+            }
+        }
+    }
+
+    /**
+     * checks if division has any mustVisit node that need to be visited
+     * @param div - a Division vertex
+     * @return a boolean telling whether there are any nodes
+     */
+    public boolean anyMustVisits(DSAVertex div)
+    {
+        int mustVisit = 0;
+        DSAVertex cur = null;
+        Iterator<DSAVertex> it = div.links.iterator();
+
+        while(it.hasNext())
+        {
+            cur = it.next();
+            if(cur.mustVisit)// && !cur.visited)
+            {
+                mustVisit++;
+            }
+        }
+
+        return (mustVisit > 0);
+    }
+
+    /**
+     * checks if division has any passThrough node that need to be visited
+     * @param div - a Division vertex
+     * @return a boolean telling whether there are any nodes
+     */
+    public boolean anyPassThrough(DSAVertex div)
+    {
+        int pass = 0;
+        DSAVertex cur = null;
+        Iterator<DSAVertex> it = div.links.iterator();
+
+        while(it.hasNext())
+        {
+            cur = it.next();
+            if(cur.passThrough && !cur.visited)
+            {
+                pass++;
+            }
+        }
+
+        return (pass > 0);
+    }
+
+    /**
+     * checks if division has any more node that need to be visited
+     * @param div - a Division vertex
+     * @return a boolean telling whether there are any nodes
+     */
+    public boolean anyMoreVisits(DSAVertex div)
+    {
+        int found = 0;
+        DSAVertex cur = null;
+        Iterator<DSAVertex> it = div.links.iterator();
+
+        while(it.hasNext())
+        {
+            cur = it.next();
+            if(cur.mustVisit && !cur.visited)
+            {
+                found++;
+            }
+        }
+    
+        System.out.println(found); 
+        return (found > 0);
+    }
+
+
+    /**
+     * checks if a state has its own airport
+     * @param div - a Division vertex
+     * @return a boolean telling whether the state has an airport
+     */
     public boolean stateHasOwnAirport(DSAVertex div)
     {
         boolean found = false;
@@ -725,6 +842,11 @@ public class DSAGraph
         return found;
     }
 
+    /**
+     * method to find closest neighbour
+     * @param start - a Division vertex
+     * @return fastDiv - a Division that is the fastest to travel
+     */
     public DSAVertex findFastNeighbour(DSAVertex start)
     {
         int quickest = Integer.MAX_VALUE;
@@ -736,7 +858,7 @@ public class DSAGraph
         while(it.hasNext())
         {
             curEdg = it.next();
-            if(curEdg.dest.mustVisit && !curEdg.dest.visited)
+            if((curEdg.dest.mustVisit) && (!curEdg.dest.visited) && curEdg.transport.equals("car"))
             {
                 if(curEdg.minutes < quickest)
                 {
@@ -744,9 +866,9 @@ public class DSAGraph
                     longDist = curEdg.distance;
                     fastDiv = curEdg.dest;
                 }
-                else if(curEdg.minutes == quickest)
+                else if(curEdg.minutes == quickest)//if the times a equivalent
                 {
-                    if(curEdg.distance > longDist)
+                    if(curEdg.distance > longDist)//then get the fastest travel
                     {
                         quickest = curEdg.minutes;
                         longDist = curEdg.distance;
@@ -759,6 +881,11 @@ public class DSAGraph
         return fastDiv;
     }
 
+    /**
+     * find nearest airport from given division
+     * @param start - a Division vertex
+     * @return fastDiv - nearest airport
+     */
     public DSAVertex findNearAirportFromDiv(DSAVertex start)
     {
         int quickest = Integer.MAX_VALUE;
@@ -770,7 +897,7 @@ public class DSAGraph
         while(it.hasNext())
         {
             curEdg = it.next();
-            if(curEdg.dest.division.contains("Airport") && curEdg.dest.airportForCampaign)
+            if(curEdg.dest.division.contains("Airport") && curEdg.dest.airportForCampaign)//only if airport is need for campaign travel
             {
                 if(curEdg.minutes < quickest)
                 {
@@ -793,6 +920,11 @@ public class DSAGraph
         return fastDiv;
     }
 
+    /**
+     * checks if overall campaign is done
+     * @param divQueue - queue containing required division
+     * @return a boolean telling whether campaign is done
+     */
     public boolean campaignDone(DSAQueue<Division> divQueue)
     {
         int total, done = 0;
@@ -815,6 +947,11 @@ public class DSAGraph
     }
 
     //implement a airport version for this since fenner could not be reached in when tested
+    /**
+     * checks if all divisions in a state are all visited
+     * @param start - a Division vertex
+     * @return a boolean telling whether all div visited within state
+     */
     public boolean stateAllVisit(DSAVertex start)
     {
         int total = 0, visits = 0;
@@ -825,19 +962,24 @@ public class DSAGraph
         while(it.hasNext())
         {
             cur = it.next();
-            if(cur.mustVisit && cur.state.equals(start.state))
+            if(cur.mustVisit && cur.state.equals(start.state))//makes sure current is a mustVisit and is part of import vertex state
             {
                 if(cur.visited)
                 {
-                    visits++;
+                    visits++;//get amount visited
                 }
-                total++;
+                total++;//get total of must visits
             }
         }
 
         return (visits / total == 1); 
     }
 
+    /**
+     * method to get the vertex to start from, or to visit
+     * @param div - a Division vertex
+     * @return reqDiv - the required division
+     */
     public DSAVertex getVisitVertex(String div)
     {
         DSAVertex reqDiv = getVertex(div);
@@ -853,41 +995,46 @@ public class DSAGraph
 
         return reqDiv;
     }
-    
-    public void sortDivQueue(DSAQueue<Division> divQueue)
-    {
-        Division cur = null;
-        Iterator<Division> it = divQueue.iterator();
 
-        while(it.hasNext())
-        {
-            cur = it.next();
-            //System.out.println(fastInterstateByPlane(getVertex(cur.getDivName()), divQueue));
-            System.out.println(findAirportFromDiv(getVertex("Perth Airport")).division);
-        }
-
-
-    }
-
-    public boolean containNeighbour(DSAVertex division, Division needDiv)
+    /**
+     * method to get neighbour that has a direct visit to a mustVisit and passThrough node
+     * @param fromDiv - a Division vertex
+     * @return visitFromNBR - the node that contains neighbours that are mustVisit and passThrough
+     */
+    public DSAVertex getNBRDirectVisit(DSAVertex fromDiv)
     {
         boolean found = false;
         DSAVertex v = null;
-        Iterator<DSAVertex> adjList;
-        adjList = division.links.iterator();
+        DSAVertex visitFromNBR = null;
+        Iterator<DSAVertex> adjList, NBRList;
+        adjList = fromDiv.links.iterator();
 
+        
         while(adjList.hasNext() && !found)
         {
             v = adjList.next();
-            if(v.division.equals(needDiv.getDivName()))
+            NBRList = fromDiv.links.iterator();
+            if(v.passThrough)
             {
-                found = true;
+                while(NBRList.hasNext() && !found)
+                {
+                    visitFromNBR = NBRList.next();
+                    if(visitFromNBR.mustVisit && !visitFromNBR.visited)
+                    {
+                        found = true;
+                    }
+                }
             }
         }
 
-        return found;
+        return visitFromNBR;
     }
     
+    /**
+     * method to fastest flight
+     * @param airport - a Division vertex
+     * @return shortState - the destination node of the is part of the shortest flight
+     */
     public DSAVertex fastInterstateByPlane(DSAVertex airport)
     {
         int quickest = Integer.MAX_VALUE;
@@ -927,6 +1074,12 @@ public class DSAGraph
         return shortState;
     }
 
+    /**
+     * method to check if a specified divison is part of the itinerary
+     * @param state - String for state abbreviation
+     * @param div - a Division vertex
+     * @return found - boolean to tell if specified state is found
+     */
     public boolean matchStates(String state, DSAQueue<Division> div)
     {
         boolean found = false;
@@ -942,6 +1095,32 @@ public class DSAGraph
         return found;
     }
 
+    /**
+     * method to check if a specified divison is part of the itinerary
+     * @param divName - String for division name
+     * @param div - a Division vertex
+     * @return found - boolean to tell if specified division is found
+     */
+    public boolean matchDivs(String divName, DSAQueue<Division> div)
+    {
+        boolean found = false;
+        Division cur = null;
+        Iterator<Division> it = div.iterator();
+
+        while(it.hasNext() && !found)
+        {
+            cur = it.next();
+            found = (divName.equals(cur.getDivName()));
+        }
+
+        return found;
+    }
+
+    /**
+     * method to find nearest within division
+     * @param fromDiv - a Division vertex
+     * @return airport - an airport within the division
+     */
     public DSAVertex findAirportFromDiv(DSAVertex fromDiv)
     {
         boolean found = false;
@@ -1004,8 +1183,16 @@ public class DSAGraph
 
         return (visits == total);
     }
+
+    public DSAQueue<String> getGraphOutput()
+    {
+        return this.writeToFile;
+    }
        
 //private methods
+    /**
+     * method to create an adjacency matrix
+     */
     private int[][] createMatrix()
     {
         int size, ii, jj;

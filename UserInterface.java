@@ -62,8 +62,7 @@ public class UserInterface
                     listMarginByParty(partyAbrev);
                 break;
                 case 4:
-                    itPlace = stringInput("Enter a division name from itinerary list:> ");
-                    f.displayItinerary(itPlace);
+                    displayItinerary();
                 break;
                 default:
                     System.out.println("invalid choice");
@@ -140,29 +139,6 @@ public class UserInterface
         orderByNomFields();//method that call file to sort nominee list
 
         zeroResults = f.listNoms(state, party, div);
-        /**
-        switch(option)
-        {
-            case 1:
-                state = stringInput("Enter a states' abbreviation or Enter ALL to display all states: ");
-                f.listByState(state);
-                readExecuted = true;
-            break;
-            case 2:
-                party = stringInput("Enter the abbreviation for the party or Enter ALL to display all parties: ");
-                f.listByParty(party);
-                readExecuted = true;
-            break;
-            case 3:
-                div = stringInput("Enter name of a division or Enter ALL to display all divisions: ");
-                f.listByDiv(div);
-                readExecuted = true;
-            break;
-            default:
-                System.out.println("Invalid choice");
-            break;
-        }
-        **/
         if(!zeroResults)
         {
             writeFile("listNominees.csv"); 
@@ -270,6 +246,25 @@ public class UserInterface
             default:
                 System.out.println("invalid order by");
             break;
+        }
+
+    }
+
+    /**
+     * method to display intinerary
+     */
+    private void displayItinerary()
+    {
+        String itPlace;
+        try
+        {
+            itPlace = stringInput("Enter a division name from itinerary list:> ");
+            f.displayItinerary(itPlace);
+            writeFile("DefaultCampaignResult.csv");
+        }
+        catch(IllegalArgumentException e)
+        {
+            System.out.println("Error: " + e.getMessage());
         }
 
     }

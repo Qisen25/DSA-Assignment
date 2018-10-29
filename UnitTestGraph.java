@@ -194,17 +194,21 @@ public class UnitTestGraph
 
         System.out.println("total passes: " + iNumPassed + "/" + iNumTests + " -> " + ((float)iNumPassed/(float)iNumTests)*100.0 + "%");
 
-/**
         System.out.println("====================================================================");
         System.out.println("====Running Alternate Constructor(Reading file)====");
 
         String file, vert;
+        FileIO f = new FileIO();
+       
         
         Scanner sc = new Scanner(System.in);
         System.out.print("==Enter File:");
         file = sc.nextLine();
+        
+        f.graphFromFile(file);
+        f.connectGraph();
+        DSAGraph graph = f.getGraph();
 
-        DSAGraph graph = new DSAGraph(file);
         System.out.println("total vertices: " + graph.getVertexCount()); 
         System.out.println("total edges: " + graph.getEdgeCount());
 
@@ -220,6 +224,5 @@ public class UnitTestGraph
         graph.DFS(graph.getVertex(vert));
         System.out.println("BFS");
         graph.BFS(graph.getVertex(vert));
-        **/
     }
 }

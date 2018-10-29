@@ -317,18 +317,20 @@ public class FileIO
         }
     }
 
+    public DSAGraph getGraph()
+    {
+        return this.graph;
+    }
+
     /**
-     * method to display graph connections
+     * method to handle display of itinerary
      */
     public void displayItinerary(String itLoc)
     {
+        this.outQueue = new DSAQueue<String>();//reset queue for each report that calls this
         this.connectGraph();
-        //System.out.println("==Adjacency list==");
-        //graph.displayList();
-        //System.out.println("==Edges==");
-        //graph.displayEdges();
         graph.shortPathv2(this.divToVisit, itLoc);
-        //graph.shortPath(this.divToVisit);
+        outQueue = graph.getGraphOutput();
     }
 
     //write to file
