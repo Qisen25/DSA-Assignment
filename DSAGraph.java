@@ -646,10 +646,11 @@ public class DSAGraph
             }//endwhile
 
         }
-            System.out.println("===Campaign Summary===");
-            System.out.println("Total travel time for journey: " + totalTravelTime + "mins");
-            System.out.println("Total time for meet and greets: " + meetGreet + "mins");
-            System.out.println("Total time overall for campaign: " + (totalTravelTime+meetGreet) + "mins");
+            String summary = "===Campaign Summary===" + "\nTotal travel time for journey: " + totalTravelTime + "mins" +
+            "\nTotal time for meet and greets: " + meetGreet + "mins" + "\nTotal time overall for campaign: " + (totalTravelTime+meetGreet) + "mins";
+
+            System.out.println(summary);
+            writeToFile.enqueue(summary);//write summary to file
 
             resetItinerary(toVisit);//reset the itinerary map after campaign traversal done
             clearAllVisits();

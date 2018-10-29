@@ -11,6 +11,7 @@ public class UserInterface
 {
     private String menu;
     private FileIO f;
+    private boolean itinConstructed;
 
     /**
      * DEFAULT Constructor for UserInterface
@@ -24,6 +25,7 @@ public class UserInterface
                     "(0)    -Quit\n" +
                     "Choice:>";
         this.f =  new FileIO();
+        itinConstructed = false;
     }
   
     //present functions and allows user to use functionality
@@ -62,7 +64,15 @@ public class UserInterface
                     listMarginByParty(partyAbrev);
                 break;
                 case 4:
-                    displayItinerary();
+                    if(this.itinConstructed)
+                    {
+                        displayItinerary();
+                        this.itinConstructed = false;
+                    }
+                    else
+                    {
+                        System.out.println("Please list margin before displaying itinerary");
+                    }
                 break;
                 default:
                     System.out.println("invalid choice");
@@ -188,17 +198,21 @@ public class UserInterface
         {
             threshold = realInput("Enter threshold:");
             noDisplay = f.listMargin(party, threshold);
+            this.itinConstructed = true;
             if(noDisplay)
             {
                 System.out.println("No margins to display for party: " + party + " with in custom threshold range..");
+                this.itinConstructed = false;
             }
         }
         else if(custom == 0)
         {
             noDisplay = f.listMargin(party, defaultThreshold);
+            this.itinConstructed = true;
             if(noDisplay)
             {
                 System.out.println("No margins to display for the " + party + " party with in default threshold range...");
+                this.itinConstructed = false;
             }
         }
         else
