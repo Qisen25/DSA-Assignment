@@ -1,6 +1,7 @@
 import java.util.*;
 import java.io.*;
-//Unit test for DSAGraph from DSA prac4 slightly modified
+//By Kei Wang 19126089
+//Unit test for DSAGraph from DSA prac6 slightly modified
 public class UnitTestGraph
 {
     public static void main(String [] args)
@@ -202,9 +203,14 @@ public class UnitTestGraph
        
         
         Scanner sc = new Scanner(System.in);
-        System.out.print("==Enter File:");
+        System.out.print("==Enter File candidates or nominees:");
         file = sc.nextLine();
-        
+       
+        f.readHouseCand(file); 
+
+        System.out.print("==distances from elect:");
+        file = sc.nextLine();
+
         f.graphFromFile(file);
         f.connectGraph();
         DSAGraph graph = f.getGraph();
